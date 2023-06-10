@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap Demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+  <div class="container">
+    <h1>Bem-vindo!</h1>
+    <p>O Raspberry Pi Pico W está conectado, com o IP {{ip_address}}</p>
+    <h2>Temperatura: {{temperature}}</h2>
+    <br/>
+    <div class="btn-group" role="group" aria-label="Modo">
+      <button type="button" class="btn btn-primary" id="onBtn">On</button>
+      <button type="button" class="btn btn-danger" id="offBtn">Off</button>
+      <button type="button" class="btn btn-secondary" id="autoBtn">Auto</button>
+    </div>
+    <h2>Status do LED: {{led_status}}</h2>
+    
+    <div id="autoControl" style="display: none;">
+      <h3>Controle de Temperatura Automático</h3>
+      <label for="tempRange">Temperatura Desejada:</label>
+      <input type="range" class="form-range" id="tempRange" min="10" max="40" step="1">
+      <p id="tempValue">Temperatura: <span id="tempSpan"></span></p>
+      <button type="button" class="btn btn-primary" id="setTempBtn">Definir</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('onBtn').onclick = async function() {
+      await fetch('/on');
+      location.reload(); // Recarregar a página
+    };
+
+    document.getElementById('offBtn').onclick = async function() {
+      await fetch('/off');
+      location.reload(); // Recarregar a página
+    };
+
+    document.getElementById('autoBtn').onclick = function() {
+      var autoControl = document.getElementById('autoControl');
+      autoControl.style.display = 'block';
+    };
+
+    document.getElementById('setTempBtn').onclick = async function() {
+      var tempRange = document.getElementById('tempRange');
+      var temperature = tempRange.value;
+      await fetch('/auto?temperature=' + temperature);
+      location.reload(); // Recarregar a página
+    };
+
+    // Atualizar valor da temperatura
+    var tempRange = document.getElementById('tempRange');
+    var tempSpan = document.getElementById('tempSpan');
+    tempSpan.innerHTML = tempRange.value;
+    tempRange.oninput = function() {
+      tempSpan.innerHTML = this.value;
+    };
+  </script>
+</body>
+</html>
