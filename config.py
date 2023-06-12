@@ -3,6 +3,7 @@ AP_DOMAIN = "pipico.net"
 AP_TEMPLATE_PATH = "ap_templates"
 APP_TEMPLATE_PATH = "app_templates"
 WIFI_FILE = "wifi.json"
+MQTT_CONFIG_FILE = "conf.json"
 
 # Email details
 smtp_server = 'smtp-relay.sendinblue.com'
