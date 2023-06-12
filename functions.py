@@ -1,35 +1,15 @@
 import config
 import machine
-from machine import Pin
+import network
+#from machine import Pin
 import utime
+from umqtt.simple import MQTTClient
 
 # Inicializar o LED
 onboard_led = machine.Pin("LED", machine.Pin.OUT)
 led_status = False
 
-# LED RGB
-led_r = Pin(16, Pin.OUT)
-led_g = Pin(17, Pin.OUT)
-led_b = Pin(15, Pin.OUT)
 
-led_r.value(1)
-led_g.value(1)
-led_b.value(1)
-
-while True:
-    led_r.toggle()
-    utime.sleep(1)
-    led_r.toggle()
-
-    led_g.toggle()
-    utime.sleep(1)
-    led_g.toggle()
-
-    # Alteração: Ligar simultaneamente o LED vermelho e verde para obter a cor amarela
-    led_r.value(1)
-    led_g.value(0)
-
-    utime.sleep(1)
 # Função para obter o status do LED
 def get_led_status():
     return "ligado" if led_status else "desligado"
@@ -72,6 +52,35 @@ def rega_auto(request):
         # Se a temperatura não for válida, retornar um erro
         return "Temperatura inválida.", 400
 
+
+#
+client_id="picow"
+mqtt_server="192.168.8.60"
+topic_sub="led"
+
+#
+def sub_cb(topic, msg):
+    print("New message on topic: {}".format(topic.decode('utf-8')))
+    msg = msg.decode('utf-8')
+    print(msg)
+    if msg == "on":
+        led.on()
+    elif msg == "off":
+        led.off()
+        
+#
+def mqtt_connect():
+    client = MQTTClient(client_id,  mqtt_server, port=1883, keepalive=60, user="pico", password="pico")
+    client.set_callback(sub_cb)
+    client.connect()
+    print('Conectado ao %s MQTT Broker'%(mqtt_server))
+    return client
+
+#
+def reconnect():
+    print('Failed to connect to MQTT Broker. Reconnecting...')
+    time.sleep(5)
+    machine.reset()
 
 #
 
