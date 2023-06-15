@@ -12,6 +12,7 @@ import functions
 import usocket as socket
 import network
 
+
 # Entrar no modo de configuração para definir SSID e senha do Wi-Fi
 def setup_mode():
     print("Configurando...")
@@ -81,7 +82,7 @@ def setup_mode():
 def application_mode():
     # O WebServer agora está ativo
     print("Modo Web Ativo.")
-    
+
     def app_index(request):
         ip_address = connect_to_wifi(wifi_credentials["ssid"], wifi_credentials["password"])
         temperatura = str(pico_temp_sensor.temp)
@@ -91,86 +92,115 @@ def application_mode():
     def app_toggle_led(request):
         functions.toggle_led()
         return app_index(request)
-    
+
     def app_rega_on(request):
         functions.rega_on()
-        client.publish("Rega", "Ligado")
+        #client.publish("Rega", "Ligado")
         return "ok"
-    
+
     def app_rega_off(request):
         functions.rega_off()
-        client.publish("Rega", "Desligado")
+        #client.publish("Rega", "Desligado")
         return "ok"
-   
+
     def app_rega_auto(request):
         functions.rega_auto(request)
-        client.publish("Rega", "Automático")
+        #client.publish("Rega", "Automático")
         return "ok"
     
-    def app_mqtt_config(request):
-        try:
-            # Verificar se o ficheiro conf.json existe
-            os.stat(config.MQTT_CONFIG_FILE)
+    def render_mqtt_config_page(mqtt_server="", mqtt_user="", mqtt_topic=""):
+        html_content = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Configurações MQTT</title>
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        </head>
+        <body>
+            <div class="container">
+                <h2 class="mt-4">Configurações MQTT</h2>
+                <form action="/config" method="POST">
+                    <div class="form-group">
+                        <label for="mqttServer">Servidor MQTT:</label>
+                        <input type="text" class="form-control" id="mqttServer" name="mqttServer" placeholder="Endereço do servidor MQTT" value="{mqtt_server}">
+                    </div>
 
-            # Ler as informações do ficheiro conf.json
-            with open(config.MQTT_CONFIG_FILE) as f:
-                conf_data = json.load(f)
+                    <div class="form-group">
+                        <label for="mqttUser">Utilizador MQTT:</label>
+                        <input type="text" class="form-control" id="mqttUser" name="mqttUser" placeholder="Utilizador MQTT" value="{mqtt_user}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mqttPassword">Senha MQTT:</label>
+                        <input type="password" class="form-control" id="mqttPassword" name="mqttPassword" placeholder="Senha MQTT">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mqttTopic">Tópico Subscrito:</label>
+                        <input type="text" class="form-control" id="mqttTopic" name="mqttTopic" placeholder="Tópico subscrito" value="{mqtt_topic}">
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="deleteWifiConfig">
+                        <label class="form-check-label" for="deleteWifiConfig">Apagar configuração Wi-Fi</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+                </form>
+            </div>
+        </body>
+        </html>
+        """
+
+        return html_content.format(mqtt_server=mqtt_server, mqtt_user=mqtt_user, mqtt_topic=mqtt_topic)
+
+    
+    def app_mqtt_config(request):
+        if request.method == "GET":
+            try:
+                # Verificar se o ficheiro conf.json
+                os.stat(config.MQTT_CONFIG_FILE)
+
+                # Ler as informações do ficheiro conf.json
+                with open(config.MQTT_CONFIG_FILE) as f:
+                    conf_data = json.load(f)
+
+                # Renderizar a página de configurações MQTT com os valores existentes
                 mqtt_server = conf_data.get("mqtt_server", "")
                 mqtt_user = conf_data.get("mqtt_user", "")
-                mqtt_password = conf_data.get("mqtt_password", "")
                 mqtt_topic = conf_data.get("mqtt_topic", "")
-                f.close()
-        except Exception:
-            # Definir as informações como vazias
-            mqtt_server = ""
-            mqtt_user = ""
-            mqtt_password = ""
-            mqtt_topic = ""
+                html_content = render_mqtt_config_page(mqtt_server=mqtt_server, mqtt_user=mqtt_user, mqtt_topic=mqtt_topic)
+            except OSError:
+                # Renderizar a página de configurações MQTT sem valores
+                html_content = render_mqtt_config_page()
+            
+            return html_content
 
+        elif request.method == "POST":
+            # Ler os dados do formulário POST
+            mqtt_server = request.form.get("mqttServer")
+            mqtt_user = request.form.get("mqttUser")
+            mqtt_password = request.form.get("mqttPassword")
+            mqtt_topic = request.form.get("mqttTopic")
 
-        # Renderizar o template com as informações MQTT
-        html_content = render_template(f"{config.APP_TEMPLATE_PATH}/config-mqtt.html",
-                                       mqtt_server=mqtt_server,
-                                       mqtt_user=mqtt_user,
-                                       mqtt_password=mqtt_password,
-                                       mqtt_topic=mqtt_topic)
-        return html_content
-        
-    def app_mqtt_config_ok(request):
-        # Obter os valores dos campos do formulário
-        mqtt_server = request.form("mqttServer")
-        mqtt_user = request.form("mqttUser")
-        mqtt_password = request.form("mqttPassword")
-        mqtt_topic = request.form("mqttTopic")
+            # Validar e guardar as configurações
+            if mqtt_server and mqtt_user and mqtt_topic:
+                conf_data = {
+                    "mqtt_server": mqtt_server,
+                    "mqtt_user": mqtt_user,
+                    "mqtt_topic": mqtt_topic
+                }
 
-        # Criar um dicionário com as credenciais MQTT
-        mqtt_credentials = {
-            "mqtt_server": mqtt_server,
-            "mqtt_user": mqtt_user,
-            "mqtt_password": mqtt_password,
-            "mqtt_topic": mqtt_topic
-        }
-        
-        #Verificar se está a receber as informações do site
-        print(f"MQTT Server: {mqtt_server}")
-        print(f"MQTT User: {mqtt_user}")
-        print(f"MQTT Password: {mqtt_password}")
-        print(f"MQTT Topic: {mqtt_topic}")
-        
-        try:
-            # Guarda as credenciais em um ficheiro
-            with open(config.MQTT_CONFIG_FILE, "w") as f:
-                json.dump(mqtt_credentials, f)
-        except Exception as e:
-            # Erro de gravação
-            error_message = "Erro ao gravar as credenciais MQTT. Por favor, tente novamente mais tarde."
-            # Aqui você pode registrar o erro, exibir uma mensagem de erro ao usuário, redirecionar para uma página de erro, etc.
-            # Por simplicidade, vamos retornar uma resposta com a mensagem de erro.
-            return error_message
+                # Salvar as informações no arquivo conf.json
+                with open(config.MQTT_CONFIG_FILE, "w") as f:
+                    json.dump(conf_data, f)
 
-        # Renderizar o template com as informações MQTT
-        return "OK"
-
+                return "Configurações MQTT guardadas com sucesso!"
+            else:
+                return "Erro a guardar as configurações MQTT!"
 
     def app_catch_all(request):
         return "Not found.", 404
@@ -181,13 +211,10 @@ def application_mode():
     server.add_route("/on", handler=app_rega_on, methods=["GET"])
     server.add_route("/off", handler=app_rega_off, methods=["GET"])
     server.add_route("/auto", handler=app_rega_auto, methods=["GET"])
-    server.add_route("/config", handler=app_mqtt_config, methods=["GET"])
-    server.add_route("/config/ok", handler=app_mqtt_config_ok, methods=["POST"])
-    #server.add_route("/log", handler=app_log, methods=["GET"])
-
+    server.add_route("/config", handler=app_mqtt_config, methods=["GET", "POST"])
+    # server.add_route("/log", handler=app_log, methods=["GET"])
 
     server.set_callback(app_catch_all)
-
 try:
     os.stat(config.WIFI_FILE)
 
@@ -218,21 +245,19 @@ try:
         #    print("Falha no envio do email. Erro:", response)
         #smtp.quit()
 
-        application_mode()
-        
-        # Ligar ao Broker MQTT
-        print("A tentar ligar ao Broker MQTT...")
+                
+        # Ligar ao Broker MQTT      
         try:
+            print("A tentar ligar ao Broker MQTT...")
             client = functions.mqtt_connect()
         #client.connect()
         #client.subscribe(functions.topic_sub)
         
-        except OSError as e:
-            print("Erro ao conectar ao broker")
-      #      functions.reconnect()
+        except OSError as e:            
+                print("Erro ao conectar ao broker.")
 
-      #      client.check_msg()
-      #      time.sleep(1)
+        # Entra no modo da aplicação     
+        application_mode()
         
 except Exception:
     # Se não encontrar as credenciais do Wi-Fi, inicie o modo de configuração
