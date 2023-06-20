@@ -1,7 +1,10 @@
 import config
 import machine
 import network
-#from machine import Pin
+import json
+from machine import I2C, Pin
+from lcd_api import LcdApi
+from pico_i2c_lcd import I2cLcd
 import utime
 from umqtt.simple import MQTTClient
 
@@ -9,6 +12,17 @@ from umqtt.simple import MQTTClient
 onboard_led = machine.Pin("LED", machine.Pin.OUT)
 led_status = False
 
+# Definir o pin do relay
+relay1=Pin(18,Pin.OUT)
+relay2=Pin(19,Pin.OUT)
+
+# Configuração do LCD
+I2C_ADDR     = 0x27
+I2C_NUM_ROWS = 2
+I2C_NUM_COLS = 16
+
+i2c = I2C(0, sda=machine.Pin(16), scl=machine.Pin(17), freq=400000)
+lcd = I2cLcd(i2c, I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS)
 
 # Função para obter o status do LED
 def get_led_status():
@@ -20,6 +34,20 @@ def get_available_networks():
     networks = wlan.scan()
     return [net[0].decode() for net in networks]
 
+# Ler temperatura
+def read_temp():
+    sensor_temp = machine.ADC(4)
+    conversion_factor = 3.3 / (65535)
+    reading = sensor_temp.read_u16() * conversion_factor 
+    temperature = 27 - (reading - 0.706)/0.001721
+    formatted_temperature = "{:.2f}".format(temperature)
+    string_temperature = str("Temp:" + formatted_temperature)
+    print(string_temperature)
+    lcd.move_to(0,0)
+    lcd.putstr(string_temperature)
+    return string_temperature
+
+
 # Reiniciar a RpPW
 def machine_reset():
     utime.sleep(1)
@@ -28,11 +56,19 @@ def machine_reset():
 
 # Ligar rega
 def rega_on():
-    print("Executando código ON")
+    lcd.move_to(0, 1)
+    lcd.putstr("Rega ligada   ") # derivado a ter menos caracteres que o desligado
+    print("Sistema de rega ligado!")
+    #client.publish("Rega", "Ligado")
+    #relay1.value(0)
 
 # Desligar rega
 def rega_off():
-    print("Executando código OFF")
+    lcd.move_to(0, 1)
+    lcd.putstr("Rega desligada")
+    print("Sistema de rega desligado!")
+    #client.publish("Rega", "Desligado")
+    #relay1.value(1)
 
 # Função para rega automática
 def rega_auto(request):
@@ -51,12 +87,12 @@ def rega_auto(request):
     else:
         # Se a temperatura não for válida, retornar um erro
         return "Temperatura inválida.", 400
+    #client.publish("Rega", "Automático")
 
-
-#
+####### MQTT #######
+    
 client_id="picow"
-mqtt_server="192.168.8.60"
-topic_sub="led"
+topic_sub="rega"
 
 #
 def sub_cb(topic, msg):
@@ -64,16 +100,27 @@ def sub_cb(topic, msg):
     msg = msg.decode('utf-8')
     print(msg)
     if msg == "on":
-        led.on()
+        rega_on()
     elif msg == "off":
-        led.off()
-        
+        rega_off()
+    elif msg == "auto":
+        rega_auto()
 #
 def mqtt_connect():
-    client = MQTTClient(client_id,  mqtt_server, port=1883, keepalive=60, user="pico", password="pico")
+    # Ler as informações do ficheiro conf.json
+    with open(config.MQTT_CONFIG_FILE) as f:
+        conf_data = json.load(f)
+
+    # Obter as informações do MQTT Server, usuário e senha do arquivo conf.json
+    mqtt_server = conf_data.get("mqtt_server", "")
+    mqtt_user = conf_data.get("mqtt_user", "")
+    mqtt_password = conf_data.get("mqtt_password", "")
+
+    # Criar e configurar o cliente MQTT
+    client = MQTTClient(client_id, mqtt_server, port=1883, keepalive=60, user=mqtt_user, password=mqtt_password)
     client.set_callback(sub_cb)
     client.connect()
-    print('Conectado ao %s MQTT Broker'%(mqtt_server))
+    print('Conectado ao %s MQTT Broker' % mqtt_server)
     return client
 
 #
