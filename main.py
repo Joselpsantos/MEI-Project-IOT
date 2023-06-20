@@ -54,6 +54,7 @@ def setup_mode():
 
         return html_content
 
+    # Guardar as definições do wifi no ficheiro json
     def ap_configure(request):
         print("Guardando configurações...")
 
@@ -71,6 +72,7 @@ def setup_mode():
 
         return "Not found.", 404
 
+    # Rotas definidas na configuração do RPicoW
     server.add_route("/", handler=ap_index, methods=["GET"])
     server.add_route("/configure", handler=ap_configure, methods=["POST"])
     server.set_callback(ap_catch_all)
@@ -79,6 +81,7 @@ def setup_mode():
     ip = ap.ifconfig()[0]
     dns.run_catchall(ip)
 
+# Após sucesso na ligação ao wifi, o RpicoW entra no modo "aplicação"
 def application_mode():
     # O WebServer agora está ativo
     print("Modo Web Ativo.")
@@ -95,19 +98,22 @@ def application_mode():
 
     def app_rega_on(request):
         functions.rega_on()
-        #client.publish("Rega", "Ligado")
         return "ok"
 
     def app_rega_off(request):
         functions.rega_off()
-        #client.publish("Rega", "Desligado")
         return "ok"
 
     def app_rega_auto(request):
         functions.rega_auto(request)
-        #client.publish("Rega", "Automático")
         return "ok"
     
+    def lcd_update_thread():
+        while True:
+            functions.read_temp()
+            utime.sleep(5)  # Aguarda 5 segundos
+
+    # Pagina de configuração do MQTT
     def render_mqtt_config_page(mqtt_server="", mqtt_user="", mqtt_topic=""):
         html_content = """
         <!DOCTYPE html>
@@ -157,7 +163,7 @@ def application_mode():
 
         return html_content.format(mqtt_server=mqtt_server, mqtt_user=mqtt_user, mqtt_topic=mqtt_topic)
 
-    
+    # configuração do MQTT
     def app_mqtt_config(request):
         if request.method == "GET":
             try:
@@ -204,17 +210,23 @@ def application_mode():
 
     def app_catch_all(request):
         return "Not found.", 404
-
+    
+    # Definir as rotas
     server.add_route("/", handler=app_index, methods=["GET"])
     server.add_route("/toggle", handler=app_toggle_led, methods=["GET"])
-    # Adicionar outras rotas
+    
     server.add_route("/on", handler=app_rega_on, methods=["GET"])
     server.add_route("/off", handler=app_rega_off, methods=["GET"])
     server.add_route("/auto", handler=app_rega_auto, methods=["GET"])
     server.add_route("/config", handler=app_mqtt_config, methods=["GET", "POST"])
     # server.add_route("/log", handler=app_log, methods=["GET"])
-
+    # Adicionar outras rotas
+    
     server.set_callback(app_catch_all)
+    
+    # Inicia o while do lcd
+    _thread.start_new_thread(lcd_update_thread, ())
+
 try:
     os.stat(config.WIFI_FILE)
 
@@ -225,7 +237,7 @@ try:
 
         if not is_connected_to_wifi():
             # Conexão ruim. Remover arquivo
-            print("Má conexão Wi-Fi!")
+            print("Dificuldades a ligar ao Wi-Fi!")
             print(wifi_credentials)
             os.remove(config.WIFI_FILE)
             functions.machine_reset()
@@ -259,12 +271,10 @@ try:
         # Entra no modo da aplicação     
         application_mode()
         
+        
 except Exception:
-    # Se não encontrar as credenciais do Wi-Fi, inicie o modo de configuração
+    # Se não encontrar as credenciais do Wi-Fi, inicia o modo de configuração
     setup_mode()
 
 # Iniciar o WebServer
 server.run()
-while True:
-  client.subscribe(functions.topic_sub)
-
