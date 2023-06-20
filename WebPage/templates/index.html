@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(function() {
+                var socket = new WebSocket('ws://' + window.location.host + '/socket');
+    
+                socket.onmessage = function(event) {
+                    var message = JSON.parse(event.data);
+                    var topic = message.topic;
+                    var payload = message.payload;
+    
+                    // Process the received message as needed
+                    console.log('Received message on topic: ' + topic + ' with payload: ' + payload);
+                };
+            });
+        </script>
+    </head>
+<body>
+    <h1>LED Control {{ led_status }}</h1>
+    <a href="/LED/ON">Turn On</a>
+    <a href="/LED/OFF">Turn Off</a>
+    <p>{{ received_message }}</p> 
+</body>
+</html>
