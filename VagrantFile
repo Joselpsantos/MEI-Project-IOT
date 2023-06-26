@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
     
     ubuntu.vm.provider :virtualbox do |vb|
       vb.name = "experiment" # Nome atribuido à primeira VM
-	  vb.memory = 1024 # Memoria atribuida
+	    vb.memory = 1024 # Memoria atribuida
       vb.customize ["modifyvm", :id, "--groups", "/IOT-Project"]
 	end
     
@@ -41,6 +41,10 @@ Vagrant.configure("2") do |config|
     ubuntu.vm.provision "shell", privileged: true, path: "./provision/install_flask.sh"
     ubuntu.vm.provision "shell", privileged: true, path: "./provision/install_openssh.sh"
   end
+
+  #TODO
+  #Passar a execução para a pasta partilhada
+  #ver o porquê de não estar a instalar o pip
 
 end
 

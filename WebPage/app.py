@@ -39,7 +39,6 @@ def handle_connect(client, userdata, flags, rc):
        
 @app.route('/')
 def index():
-    print(socket.gethostbyname(socket.gethostname()))
     return render_template('index.html')
     
 @socketio.on("ledControl")

@@ -25,10 +25,14 @@ cp ../../vagrant/WebPage/templates/config-mqtt.html /home/webpage/templates/conf
 echo -e "$MSG_COLOR$(hostname): Create flask virtual environment\033[0m"
 cd
 virtualenv flask
+sleep 5s
 
 echo -e "$MSG_COLOR$(hostname): Activate flask virtual environment\033[0m"
 source flask/bin/activate
 
+echo -e "$(hostname): Wait for virtual environment to go up\033[0m"
+
+sleep 5s
 echo -e "$MSG_COLOR$(hostname): Install flask and dependencies\033[0m"
 pip install flask Flask-MQTT Flask-SocketIO eventlet Flask-Bootstrap gevent netifaces
 pip install eventlet
