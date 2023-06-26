@@ -204,7 +204,7 @@ try:
             functions.machine_reset()
 
         print(f"Conectado ao Wi-Fi com o IP: {ip_address}")
-
+        
         # Enviar e-mail com o endereço IP do PicoW
         #smtp = umail.SMTP(config.smtp_server, 465, ssl=True)
         #smtp.login(config.sender_email, config.sender_app_password)

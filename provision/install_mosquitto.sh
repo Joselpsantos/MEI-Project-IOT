@@ -13,7 +13,7 @@ sudo apt-get install -y mosquitto mosquitto-clients
 sudo mosquitto_passwd -c /etc/mosquitto/credentials pico <<<$'pico\npico'
 
 # Copiar o ficheiro de configuração do mosquitto
-cp ./provision/mosquitto.conf /etc/mosquitto/mosquitto.conf
+cp ../../vagrant/provision/mosquitto.conf /etc/mosquitto/mosquitto.conf
 echo "Copiado ficheiro da configuração MOSQUITTO com sucesso."
 
 # Iniciar o Mosquitto MQTT
