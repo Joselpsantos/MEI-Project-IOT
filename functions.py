@@ -6,24 +6,61 @@ from machine import I2C, Pin
 from lcd_api import LcdApi
 from pico_i2c_lcd import I2cLcd
 import utime
+import _thread
+import micropython
 from umqtt.simple import MQTTClient
 
-# Inicializar o LED
+# Inicializar ligações
 onboard_led = machine.Pin("LED", machine.Pin.OUT)
-led_status = False
-
+led_r = Pin(18, Pin.OUT)
+led_g = Pin(14, Pin.OUT)
+led_b = Pin(2, Pin.OUT)
 # Definir o pin do relay
-relay1=Pin(18,Pin.OUT)
-relay2=Pin(19,Pin.OUT)
+#relay1=Pin(1,Pin.OUT)
+#relay2=Pin(19,Pin.OUT)
 
+# Status de arranque
+led_status = False
+lcd_connected = False
+led_r.value(1)
+led_g.value(1)
+led_b.value(1)
+
+# Leitura da temperatura
+temperature = 0
+sensor_temp = machine.ADC(4)
+conversion_factor = 3.3 / (65535)
+        
 # Configuração do LCD
 I2C_ADDR     = 0x27
 I2C_NUM_ROWS = 2
 I2C_NUM_COLS = 16
 
 i2c = I2C(0, sda=machine.Pin(16), scl=machine.Pin(17), freq=400000)
-lcd = I2cLcd(i2c, I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS)
 
+# Verifica se o LCD está ligado
+try:
+    lcd = I2cLcd(i2c, I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS)
+    lcd_connected = True
+except:
+    lcd_connected = False
+
+# Definir as cores
+def led_red():
+    led_r.value(0)
+    led_g.value(1)
+    led_b.value(1)
+    
+def led_green():
+    led_r.value(1)
+    led_g.value(0)
+    led_b.value(1)
+    
+def led_blue():
+    led_r.value(1)
+    led_g.value(1)
+    led_b.value(0)
+    
 # Função para obter o status do LED
 def get_led_status():
     return "ligado" if led_status else "desligado"
@@ -34,6 +71,12 @@ def get_available_networks():
     networks = wlan.scan()
     return [net[0].decode() for net in networks]
 
+# Função para verificar a temperatura
+def verificar_temperatura():
+    reading = sensor_temp.read_u16() * conversion_factor 
+    current_temperature = 27 - (reading - 0.706) / 0.001721
+    return current_temperature
+
 # Ler temperatura
 def read_temp():
     sensor_temp = machine.ADC(4)
@@ -42,59 +85,30 @@ def read_temp():
     temperature = 27 - (reading - 0.706)/0.001721
     formatted_temperature = "{:.2f}".format(temperature)
     string_temperature = str("Temp:" + formatted_temperature)
-    print(string_temperature)
-    lcd.move_to(0,0)
-    lcd.putstr(string_temperature)
+
     return string_temperature
 
-
+# Ler temperatura para imprimmir no LCD
+def read_temp_lcd():  
+    if lcd_connected:
+        print(read_temp())
+        lcd.move_to(0,0)
+        lcd.putstr(read_temp())
+    else:
+        pass
+        
 # Reiniciar a RpPW
 def machine_reset():
     utime.sleep(1)
     print("Reiniciando...")
     machine.reset()
 
-# Ligar rega
-def rega_on():
-    lcd.move_to(0, 1)
-    lcd.putstr("Rega ligada   ") # derivado a ter menos caracteres que o desligado
-    print("Sistema de rega ligado!")
-    #client.publish("Rega", "Ligado")
-    #relay1.value(0)
-
-# Desligar rega
-def rega_off():
-    lcd.move_to(0, 1)
-    lcd.putstr("Rega desligada")
-    print("Sistema de rega desligado!")
-    #client.publish("Rega", "Desligado")
-    #relay1.value(1)
-
-# Função para rega automática
-def rega_auto(request):
-    temperature = request.query.get("temperature", "")  # Obter a temperatura
-
-    # Verificar se a temperatura é um valor válido
-    if temperature.isdigit():
-        # Converter a temperatura para o tipo adequado e realizar a ação necessária
-        temperature = int(temperature)
-
-        # Exemplo de ação: imprimir a temperatura no console
-        print(f"Temperatura definida para: {temperature} graus")
-
-        # Retornar uma resposta de sucesso
-        return "OK"
-    else:
-        # Se a temperatura não for válida, retornar um erro
-        return "Temperatura inválida.", 400
-    #client.publish("Rega", "Automático")
-
 ####### MQTT #######
     
 client_id="picow"
 topic_sub="rega"
 
-#
+# Subscribe
 def sub_cb(topic, msg):
     print("New message on topic: {}".format(topic.decode('utf-8')))
     msg = msg.decode('utf-8')
@@ -105,7 +119,8 @@ def sub_cb(topic, msg):
         rega_off()
     elif msg == "auto":
         rega_auto()
-#
+        
+# Conexão MQTT
 def mqtt_connect():
     # Ler as informações do ficheiro conf.json
     with open(config.MQTT_CONFIG_FILE) as f:
@@ -117,17 +132,80 @@ def mqtt_connect():
     mqtt_password = conf_data.get("mqtt_password", "")
 
     # Criar e configurar o cliente MQTT
-    client = MQTTClient(client_id, mqtt_server, port=1883, keepalive=60, user=mqtt_user, password=mqtt_password)
+    client = MQTTClient(client_id, mqtt_server, port=1883, keepalive=60, user=mqtt_user, password="pico1")
     client.set_callback(sub_cb)
     client.connect()
     print('Conectado ao %s MQTT Broker' % mqtt_server)
     return client
 
-#
+
+#mqtt_topic = json.load(config.MQTT_CONFIG_FILE).get("mqtt_topic")
+    
+# Reconectar ligação ao MQTT Broker
 def reconnect():
     print('Failed to connect to MQTT Broker. Reconnecting...')
-    time.sleep(5)
+    utime.sleep(5)
     machine.reset()
 
-#
+# Ligar rega
+def rega_on():
+    #client = mqtt_connect()
+    with open(config.MQTT_CONFIG_FILE) as f:
+        conf_data = json.load(f)
+    #mqtt_topic = conf_data.get("mqtt_topic")
+    if lcd_connected:
+        lcd.move_to(0, 1)
+        lcd.putstr("Rega ligada   ") # derivado a ter menos caracteres que o desligado
+    print("Sistema de rega ligado!")
+    #client.publish(mqtt_topic, "Ligado")
+    led_green()
+    #relay1.value(0)
 
+# Desligar rega
+def rega_off():
+    if lcd_connected:
+        lcd.move_to(0, 1)
+        lcd.putstr("Rega desligada")
+    print("Sistema de rega desligado!")
+    #client.publish(mqtt_topic, "Desligado")
+    led_red()
+    #relay1.value(1)
+
+# Função para rega automática
+def rega_auto(request):
+    temperature = request.query.get("temperature", "")  # Obter a temperatura
+    
+    def get_temperature():
+        sensor_temp = machine.ADC(4)
+        conversion_factor = 3.3 / (65535)
+        reading = sensor_temp.read_u16() * conversion_factor 
+        temperature = 27 - (reading - 0.706)/0.001721
+        return temperature
+    
+    # Verificar se a temperatura é um valor válido
+    if temperature.isdigit():
+        # Converter a temperatura para INT
+        temperature = int(temperature)
+
+        # Imprimir a temperatura na consola
+        print(f"Temperatura definida para: {temperature} graus")
+
+        # Função para ligar a rega por 5 minutos
+        def rega_temporizada():
+            rega_on()  
+            utime.sleep(300)  # Aguardar 5 minutos
+            rega_off()
+        
+        while True:
+            if get_temperature() >= temperature:
+                break  # Saír do loop
+            else:
+                utime.sleep(60)  # Aguardar 1 minuto antes de verificar novamente
+
+        # Retornar uma resposta de sucesso
+        return "OK"
+    else:
+        # Se a temperatura não for válida, retornar um erro
+        return "Temperatura inválida.", 400
+    #client.publish("Rega", "Automático")
+    led_blue()
