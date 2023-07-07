@@ -11,7 +11,7 @@
   <div class="container">
     <h1>Bem-vindo!</h1>
     <p>O Raspberry Pi Pico W está conectado, com o IP {{ip_address}}</p>
-    <h2>Temperatura: {{temperature}}</h2>
+    <h2>Temperatura: <span id="message"></span></h2>
     <br/>
     <div class="btn-group" role="group" aria-label="Modo">
       <button type="button" class="btn btn-primary" id="on">On</button>
@@ -24,7 +24,7 @@
       <h3>Controle de Temperatura Automático</h3>
       <label for="tempRange">Temperatura Desejada:</label>
       <input type="range" class="form-range" id="tempRange" min="10" max="40" step="1">
-      <p id="tempValue">Temperatura: <span id="message"></span></p>
+      <p id="tempValue">Temperatura: </p>
       <button type="button" class="btn btn-primary" id="setTempBtn">Definir</button>
     </div>
   </div>
@@ -55,16 +55,12 @@
         document.getElementById("controls").style.display = "inline";
     })
 
-    document.getElementById("message").addEventListener("keyup", function (event) {
-        if (event.key == "Enter") {
-            let message = document.getElementById("message").value;
-            socket.emit("publish", message);
-            document.getElementById("message").value = "";
-        }
+    socket.on("new_message", function(data) {
+        document.getElementById("message").innerHTML = data.toString();
     })
 
-    socket.on("receive", function(data) {
-        document.getElementById("message").innerHTML = data.topic;
+    socket.io.on("error", (error) => {
+              document.getElementById("message").innerHTML = 'Erro: ' + error;
     })
 </script>
 </body>
