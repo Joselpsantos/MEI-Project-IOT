@@ -1,8 +1,3 @@
-"""
-
-A small Test application to show how to use Flask-MQTT.
-
-"""
 import logging
 
 import eventlet
@@ -52,6 +47,11 @@ def getIpEnd():
 def handle_publish(json_str):
     mqtt.publish("control", json_str, 0)
     print(json_str)
+
+@socketio.on('auto')
+def handle_publish(json_str):
+    mqtt.publish("control", "auto " + json_str, 0)
+    print("auto " + json_str)  
 
 @socketio.on('subscribe')
 def handle_subscribe(json_str):

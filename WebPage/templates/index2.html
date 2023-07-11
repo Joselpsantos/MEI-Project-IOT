@@ -34,21 +34,10 @@
       socket.emit('led', data="off");
     });
 
-    $('#subscribe').click(function(event) {
-      var topic = $('#subscribe_topic').val();
-      var qos = $('#subscribe_qos').val();
-      var data = '{"topic": "' + topic + '", "qos": ' + qos + '}';
-      socket.emit('subscribe', data=data);
-      $('#subscribe').hide();
-      $('#unsubscribe').show();
-      $('#subscribe_topic').prop('readonly', true);
-    });
-
-    $('#unsubscribe').click(function(event) {
-      socket.emit('unsubscribe_all');
-      $('#subscribe').show();
-      $('#unsubscribe').hide();
-      $('#subscribe_topic').prop('readonly', false);
+    $('#setTempBtn').click(function(event) {
+      var tempRange = document.getElementById('tempRange');
+      var temperature = tempRange.value;
+      socket.emit('auto', data=temperature);
     });
 
     socket.on('led_status', function(data) {
@@ -70,6 +59,21 @@
       $textarea.val($textarea.val() + text + '\n');
     })
   });
+</script>
+<script>
+
+  document.getElementById('autoBtn').onclick = function() {
+    var autoControl = document.getElementById('autoControl');
+    autoControl.style.display = 'block';
+  };
+
+  // Atualizar valor da temperatura
+  var tempRange = document.getElementById('tempRange');
+  var tempSpan = document.getElementById('tempSpan');
+  tempSpan.innerHTML = tempRange.value;
+  tempRange.oninput = function() {
+    tempSpan.innerHTML = this.value;
+  };
 </script>
 {% endblock %}
 
