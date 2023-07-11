@@ -9,6 +9,7 @@ import utime
 import _thread
 import micropython
 from umqtt.simple import MQTTClient
+import uasyncio as asyncio
 
 # Inicializar ligações
 onboard_led = machine.Pin("LED", machine.Pin.OUT)
@@ -72,17 +73,14 @@ def get_available_networks():
     return [net[0].decode() for net in networks]
 
 # Função para verificar a temperatura
-def verificar_temperatura():
+def check_temp():
     reading = sensor_temp.read_u16() * conversion_factor 
     current_temperature = 27 - (reading - 0.706) / 0.001721
     return current_temperature
 
 # Ler temperatura
 def read_temp():
-    sensor_temp = machine.ADC(4)
-    conversion_factor = 3.3 / (65535)
-    reading = sensor_temp.read_u16() * conversion_factor 
-    temperature = 27 - (reading - 0.706)/0.001721
+    temperature = check_temp()
     formatted_temperature = "{:.2f}".format(temperature)
     string_temperature = str("Temp:" + formatted_temperature)
 
@@ -105,20 +103,27 @@ def machine_reset():
 
 ####### MQTT #######
     
-client_id="picow"
 topic_sub="rega"
+topic="control"
 
 # Subscribe
-def sub_cb(topic, msg):
+def sub_cb(topic, msg, client):
     print("New message on topic: {}".format(topic.decode('utf-8')))
     msg = msg.decode('utf-8')
     print(msg)
     if msg == "on":
-        rega_on()
+        rega_on(client)
     elif msg == "off":
-        rega_off()
-    elif msg == "auto":
-        rega_auto()
+        rega_off(client)
+    elif msg.startswith("\"AUTO\","):
+        try:
+            temperature = int(msg.split(",")[1])
+            #rega_auto(temperature, client)
+            loop = asyncio.get_event_loop()
+            loop.create_task(rega_auto(request, client, temperature))
+            loop.run_forever()
+        except (ValueError, IndexError):
+            print("Formato inválido da mensagem AUTO")
         
 # Conexão MQTT
 def mqtt_connect():
@@ -132,14 +137,15 @@ def mqtt_connect():
     mqtt_password = conf_data.get("mqtt_password", "")
 
     # Criar e configurar o cliente MQTT
-    client = MQTTClient(client_id, mqtt_server, port=1883, keepalive=60, user=mqtt_user, password="pico1")
+    client = MQTTClient("picoW", mqtt_server, port=1883, keepalive=60, user=mqtt_user, password="pico")
     client.set_callback(sub_cb)
     client.connect()
+    client.subscribe("control")
+    
     print('Conectado ao %s MQTT Broker' % mqtt_server)
+        
     return client
 
-
-#mqtt_topic = json.load(config.MQTT_CONFIG_FILE).get("mqtt_topic")
     
 # Reconectar ligação ao MQTT Broker
 def reconnect():
@@ -148,33 +154,56 @@ def reconnect():
     machine.reset()
 
 # Ligar rega
-def rega_on():
+def rega_on(client):
     #client = mqtt_connect()
     with open(config.MQTT_CONFIG_FILE) as f:
         conf_data = json.load(f)
-    #mqtt_topic = conf_data.get("mqtt_topic")
+    mqtt_topic = conf_data.get("mqtt_topic")
     if lcd_connected:
+        lcd.clear()
         lcd.move_to(0, 1)
-        lcd.putstr("Rega ligada   ") # derivado a ter menos caracteres que o desligado
+        lcd.putstr("Rega ligada") # derivado a ter menos caracteres que o desligado
+    with open("auto.txt", "w") as f:
+        f.write("ON")
+        print(f"Estado pretendido salvo: ON")
     print("Sistema de rega ligado!")
-    #client.publish(mqtt_topic, "Ligado")
+    client.publish(mqtt_topic, "Ligado")
     led_green()
     #relay1.value(0)
 
 # Desligar rega
-def rega_off():
+def rega_off(client):
+    #client = mqtt_connect()
+    with open(config.MQTT_CONFIG_FILE) as f:
+        conf_data = json.load(f)
+    mqtt_topic = conf_data.get("mqtt_topic")
     if lcd_connected:
         lcd.move_to(0, 1)
         lcd.putstr("Rega desligada")
+    with open("auto.txt", "w") as f:
+        f.write("OFF")
+        print(f"Estado pretendido salvo: OFF")
     print("Sistema de rega desligado!")
-    #client.publish(mqtt_topic, "Desligado")
+    client.publish(mqtt_topic, "Desligado")
     led_red()
     #relay1.value(1)
 
-# Função para rega automática
-def rega_auto(request):
+async def rega_auto(request, client):
+    led_blue()
+    with open(config.MQTT_CONFIG_FILE) as f:
+        conf_data = json.load(f)
+    mqtt_topic = conf_data.get("mqtt_topic")
     temperature = request.query.get("temperature", "")  # Obter a temperatura
     
+    # Envia o estado para o LCD
+    if lcd_connected:
+        lcd.clear()
+        lcd.move_to(0, 1)
+        lcd.putstr("Rega AUTO")
+        
+    # Envia msg MQTT
+    client.publish(mqtt_topic, "AUTO")
+        
     def get_temperature():
         sensor_temp = machine.ADC(4)
         conversion_factor = 3.3 / (65535)
@@ -188,24 +217,61 @@ def rega_auto(request):
         temperature = int(temperature)
 
         # Imprimir a temperatura na consola
-        print(f"Temperatura definida para: {temperature} graus")
-
-        # Função para ligar a rega por 5 minutos
-        def rega_temporizada():
-            rega_on()  
-            utime.sleep(300)  # Aguardar 5 minutos
-            rega_off()
+        #print(f"Temperatura definida para: {temperature} graus")
+        
+        # Escrever o estado pretendido em um arquivo
+        with open("auto.txt", "w") as f:
+            f.write(f'"AUTO",{temperature}')
+            print(f"Estado pretendido guardado: AUTO. Temperatura: {temperature}")
         
         while True:
             if get_temperature() >= temperature:
-                break  # Saír do loop
+                # Ativar a rega
+                rega_on(client)
+                print(get_temperature())
+                await asyncio.sleep(40)  # Aguardar 5 minutos
+                rega_off(client)
             else:
-                utime.sleep(60)  # Aguardar 1 minuto antes de verificar novamente
-
+                await asyncio.sleep(10)  # Aguardar 10 segundos antes de verificar novamente
+            
         # Retornar uma resposta de sucesso
         return "OK"
     else:
         # Se a temperatura não for válida, retornar um erro
         return "Temperatura inválida.", 400
-    #client.publish("Rega", "Automático")
-    led_blue()
+    client.publish("Rega", "Automático")
+
+def update_conf_file(client):
+    with open(config.MQTT_CONFIG_FILE, "r") as f:
+        conf_data = json.load(f)
+    conf_data["subscribe_mode"] = "OFF"
+    with open(config.MQTT_CONFIG_FILE, "w") as f:
+        json.dump(conf_data, f)
+        
+async def mqtt_listener(client):
+    def mqtt_callback(topic, msg):
+        #print("Mensagem recebida no tópico:", topic)
+        print("Mensagem recebida:", msg.decode())
+        msg = msg.decode('utf-8')
+        print(msg)
+        if msg == "on":
+            rega_on(client)
+        elif msg == "off":
+            rega_off(client)
+        elif msg == "auto":
+            rega_auto(client)
+        elif msg == "unsubscribe":
+            update_conf_file(client)
+
+    #
+    client.set_callback(mqtt_callback)
+    client.subscribe("control")
+
+    while True:
+        await asyncio.sleep(1)  # Aguarda 1 segundo para evitar bloqueio
+
+        try:
+            client.check_msg()  # Verifica se há mensagens recebidas
+        except Exception as e:
+            print("Erro na verificação de mensagens MQTT:", e)
+
