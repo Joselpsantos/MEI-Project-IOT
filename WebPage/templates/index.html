@@ -12,12 +12,16 @@
   $(document).ready(function() {
     var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-    $('#publish').click(function(event) {
-      var topic = $('#topic').val();
-      var message = $('#message').val();
-      var qos = $('#qos').val();
-      var data = '{"topic": "' + topic + '", "message": "' + message + '", "qos": ' + qos + '}';
-      socket.emit('publish', data=data);
+    $('#led_on').click(function(event) {
+      //var data = '{"topic": "control", "message": "on, "qos": ' + qos + '}';
+      console.log("on")
+      socket.emit('led_on', data="on");
+    });
+
+    $('#led_off').click(function(event) {
+      var data = '{"topic": "control", "message": off, "qos": ' + qos + '}';
+      console.log(data)
+      socket.emit('led_off', data="off");
     });
 
     $('#subscribe').click(function(event) {
@@ -89,6 +93,8 @@
                 <div class="form-group">
                   <div class="col-xs-8 col-xs-offset-4">
                     <button id="publish" class="btn btn-primary">Publish</button>
+                    <button id="led_on" class="btn btn-primary">On</button>
+                    <button id="led_off" class="btn btn-primary">Off</button>
                   </div>
                 </div>
               </div>

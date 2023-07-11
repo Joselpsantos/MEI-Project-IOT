@@ -42,14 +42,17 @@ bootstrap = Bootstrap(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index2.html')
 
+@app.route('/ip')
+def getIpEnd():
+    return getIp()
 
-@socketio.on('publish')
+@socketio.on('led')
 def handle_publish(json_str):
-    data = json.loads(json_str)
-    mqtt.publish(data['topic'], data['message'], data['qos'])
-
+    #data = json.loads(json_str)
+    mqtt.publish("control", json_str, 0)
+    print(json_str)
 
 @socketio.on('subscribe')
 def handle_subscribe(json_str):
@@ -69,7 +72,11 @@ def handle_mqtt_message(client, userdata, message):
         payload=message.payload.decode(),
         qos=message.qos,
     )
-    socketio.emit('mqtt_message', data=data)
+    
+    print(message)
+    if data.topic == "control":
+        print(data.payload)
+        socketio.emit('led_status', data=data.payload)
 
 
 @mqtt.on_log()

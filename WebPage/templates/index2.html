@@ -1,0 +1,80 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Flask-MQTT example{% endblock %}
+
+{% block styles %}
+{{ super() }}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function() {
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    $('#led_on').click(function(event) {
+      //var data = '{"topic": "control", "message": "on, "qos": ' + qos + '}';
+      console.log("on")
+      socket.emit('led', data="on");
+    });
+
+    $('#led_off').click(function(event) {
+      //var data = '{"topic": "control", "message": off, "qos": ' + qos + '}';
+      console.log("off")
+      socket.emit('led', data="off");
+    });
+
+    $('#subscribe').click(function(event) {
+      var topic = $('#subscribe_topic').val();
+      var qos = $('#subscribe_qos').val();
+      var data = '{"topic": "' + topic + '", "qos": ' + qos + '}';
+      socket.emit('subscribe', data=data);
+      $('#subscribe').hide();
+      $('#unsubscribe').show();
+      $('#subscribe_topic').prop('readonly', true);
+    });
+
+    $('#unsubscribe').click(function(event) {
+      socket.emit('unsubscribe_all');
+      $('#subscribe').show();
+      $('#unsubscribe').hide();
+      $('#subscribe_topic').prop('readonly', false);
+    });
+
+    socket.on('led_status', function(data) {
+      var ledStatus = data; // Assuming the received data is the LED status
+      $('#led_status').text('Status do LED: ' + ledStatus);
+    });
+
+    socket.on('mqtt_message', function(data) {
+      console.log(data);
+      var text = '(' + data['topic'] + ' qos: ' + data['qos'] + ') ' + data['payload'];
+      var $textarea = $('#subscribe_messages');
+      $textarea.val($textarea.val() + text + '\n');
+    })
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h1>Bem-vindo!</h1>
+    <p>O Raspberry Pi Pico W está conectado, com o IP {{ip_address}}</p>
+    <h2>Temperatura: {{temperature}}</h2>
+    <br/>
+    <div class="btn-group" role="group" aria-label="Modo">
+      <button type="button" class="btn btn-primary" id="led_on">On</button>
+      <button type="button" class="btn btn-danger" id="led_off">Off</button>
+      <button type="button" class="btn btn-secondary" id="autoBtn">Auto</button>
+    </div>
+    <h2>Status do LED: {{led_status}}</h2>
+    
+    <div id="autoControl" style="display: none;">
+      <h3>Controle de Temperatura Automático</h3>
+      <label for="tempRange">Temperatura Desejada:</label>
+      <input type="range" class="form-range" id="tempRange" min="10" max="40" step="1">
+      <p id="tempValue">Temperatura: <span id="tempSpan"></span></p>
+      <button type="button" class="btn btn-primary" id="setTempBtn">Definir</button>
+    </div>
+  </div>
+  {% endblock %}
