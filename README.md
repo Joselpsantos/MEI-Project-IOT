@@ -31,11 +31,11 @@ Foi desenvolvido também, em Flask, um portal de gestão utilizando Websockets.
 - Thonny  
 
 **Hardware:** 
-- 1x Raspberry Pico
+- 1x Raspberry Pico W (doravante denominado de RPW)
 - 1x Relay 2 canais
 - 2x LED
 - 1x LCD duas linhas 
-
+- 5x resistências
 
 ## Características  
 
@@ -103,9 +103,8 @@ vagrant halt
 
 Destruir VM. O código-fonte e o conteúdo do diretório de dados permanecerão inalterados. 
 Somente a instância da máquina VirtualBox será destruída. Pode-se construir a VM com o comando 'vagrant up'.
-Este comando é útil se você deseja economizar espaço em disco.
-#### Aviso: este comando destruirá os bancos de dados do seu site.
-Backup da BD: sql-dump > db.sql 
+
+
 ~~~bash 
 vagrant destroy
 ~~~
@@ -126,16 +125,12 @@ Objetivo do projeto
 Vagrant
 MQTT
 
-Hardware:
-- Raspberry Pico W
-
-Software:
 
 
 
  
 
-Este é um código Python que consiste em dois arquivos principais: main.py e functions.py. Vou descrever cada um deles em detalhes:
+Para desenvolver o programa, que vai ser executado no RPW Este é um código Python que consiste em dois arquivos principais: main.py e functions.py. Vou descrever cada um deles em detalhes:
 
 main.py:
 
