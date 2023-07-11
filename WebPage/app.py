@@ -1,71 +1,86 @@
+"""
+
+A small Test application to show how to use Flask-MQTT.
+
+"""
+import logging
+
+import eventlet
+import json
 from flask import Flask, render_template
-import paho.mqtt.client as mqtt
+from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
 from flask_bootstrap import Bootstrap
 import netifaces
-
+eventlet.monkey_patch()
 
 app = Flask(__name__)
-socketio = SocketIO (app) 
+app.config['SECRET'] = 'my secret key'
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['MQTT_BROKER_URL'] = 'localhost'
+app.config['MQTT_BROKER_PORT'] = 1883
+app.config['MQTT_CLIENT_ID'] = 'flask_mqtt'
+app.config['MQTT_CLEAN_SESSION'] = True
+app.config['MQTT_USERNAME'] = 'pico'
+app.config['MQTT_PASSWORD'] = 'pico'
+app.config['MQTT_KEEPALIVE'] = 5
+app.config['MQTT_TLS_ENABLED'] = False
+app.config['MQTT_LAST_WILL_TOPIC'] = 'home/lastwill'
+app.config['MQTT_LAST_WILL_MESSAGE'] = 'bye'
+app.config['MQTT_LAST_WILL_QOS'] = 2
 
+# Parameters for SSL enabled
+# app.config['MQTT_BROKER_PORT'] = 8883
+# app.config['MQTT_TLS_ENABLED'] = True
+# app.config['MQTT_TLS_INSECURE'] = True
+# app.config['MQTT_TLS_CA_CERTS'] = 'ca.crt'
 
-temp_topic = 'temperature'
-control_topic = 'control'
-server = 'localhost'
-MQTTport = 1883
-client = None
+mqtt = Mqtt(app)
 socketio = SocketIO(app)
 bootstrap = Bootstrap(app)
 
-# SocketIO
-
-@socketio.on('connect')
-def on_connect():
-    print('Socket client connected.')
-    socketio.emit('receive', "Ligao ao broker")
-
-@socketio.on('ledControl')
-def on_publish(payload):
-    client.publish(control_topic, payload)
-    print(payload)
-
-# MQTT
-
-def on_connect(client, userdata, flags, rc):
-
-    socketio.emit('receive', "Status: connected to broker")
-    client.subscribe(temp_topic, qos=0)
-    client.subscribe(control_topic, qos=0)
-
-def on_message(client, userdata, msg):
-    socketio.send(msg.payload.decode())
-    print("On message " + msg.payload.decode())
-
-# HTTP
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/config')
-def config():
-    render_template("config_mqtt.html")
 
-# Main
+@socketio.on('publish')
+def handle_publish(json_str):
+    data = json.loads(json_str)
+    mqtt.publish(data['topic'], data['message'], data['qos'])
+
+
+@socketio.on('subscribe')
+def handle_subscribe(json_str):
+    data = json.loads(json_str)
+    mqtt.subscribe(data['topic'], data['qos'])
+    print("Subscribed: " + data['topic'])
+
+@socketio.on('unsubscribe_all')
+def handle_unsubscribe_all():
+    mqtt.unsubscribe_all()
+
+
+@mqtt.on_message()
+def handle_mqtt_message(client, userdata, message):
+    data = dict(
+        topic=message.topic,
+        payload=message.payload.decode(),
+        qos=message.qos,
+    )
+    socketio.emit('mqtt_message', data=data)
+
+
+@mqtt.on_log()
+def handle_logging(client, userdata, level, buf):
+    print(level, buf)
+    pass
 
 def getIp():
     addresses = netifaces.ifaddresses("enp0s8")
     ip_address = addresses[netifaces.AF_INET][0]['addr']
     return ip_address
 
-client = mqtt.Client("Mqtt-socket-bridge-2021", clean_session=True)
-client.on_connect = on_connect
-client.on_message = on_message
-client.username_pw_set("pico", "pico")
-client.connect(server, MQTTport, keepalive=60)
-
-print('Starting the MQ loop..')
-client.loop_start()
-
-print('Starting the socket server on port 5000...')
-socketio.run(app, host=getIp(), port=5001, debug=True)
+if __name__ == '__main__':
+    socketio.run(app, host=getIp(), port=5000, use_reloader=False, debug=True)

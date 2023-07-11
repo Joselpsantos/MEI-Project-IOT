@@ -1,78 +1,145 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bootstrap Demo</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-</head>
-<body>
-  <div class="container">
-    <h1>Bem-vindo!</h1>
-    <p>O Raspberry Pi Pico W está conectado, com o IP {{ip_address}}</p>
-    <h2>Temperatura: <span id="message"></span></h2>
-    <br/>
-    <div class="btn-group" role="group" aria-label="Modo">
-      <button type="button" class="btn btn-primary" id="on">On</button>
-      <button type="button" class="btn btn-danger" id="off">Off</button>
-      <button type="button" class="btn btn-secondary" id="auto">Auto</button>
-    </div>
-    <h2>Status do LED: {{led_status}}</h2>
-    
-    <div id="autoControl" style="display: none;">
-      <h3>Controle de Temperatura Automático</h3>
-      <label for="tempRange">Temperatura Desejada:</label>
-      <input type="range" class="form-range" id="tempRange" min="10" max="40" step="1">
-      <p id="tempValue">Temperatura: </p>
-      <button type="button" class="btn btn-primary" id="setTempBtn">Definir</button>
-    </div>
-  </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-   <script type="text/javascript" charset="utf-8">
+{% extends "bootstrap/base.html" %}
+{% block title %}Flask-MQTT example{% endblock %}
 
-    $(document).ready(function() {
+{% block styles %}
+{{ super() }}
+{% endblock %}
 
- var socket =io.connect('http://' + document.domain + ':' + location.port);
- socket.on('connect', function() {
-  socket.emit('my event', {data: 'I\'m connected!'});
-});
- 
- document.getElementById("on").addEventListener("click", function() {
-       
-        socket.emit("ledControl", "on");
-    })
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function() {
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-    document.getElementById("off").addEventListener("click", function() {
-        
-        socket.emit("ledControl", "off");
-    })
-
-
-
-    
-   
-
-    /*
-    document.getElementById("join-btn").addEventListener("click", function() {
-        let username = document.getElementById("username").value;
-
-        socket.connect();
-
-        socket.on("connect", function() {
-            socket.emit("user_join", username);
-        })
-
-        document.getElementById("chat").style.display = "block";
-        document.getElementById("landing").style.display = "none";
-        document.getElementById("controls").style.display = "inline";
-    })*/
-    socket.on('message', function(data) {
-      console.log('Received message:', data);
-      document.getElementById('message').innerText = data;
+    $('#publish').click(function(event) {
+      var topic = $('#topic').val();
+      var message = $('#message').val();
+      var qos = $('#qos').val();
+      var data = '{"topic": "' + topic + '", "message": "' + message + '", "qos": ' + qos + '}';
+      socket.emit('publish', data=data);
     });
-  
+
+    $('#subscribe').click(function(event) {
+      var topic = $('#subscribe_topic').val();
+      var qos = $('#subscribe_qos').val();
+      var data = '{"topic": "' + topic + '", "qos": ' + qos + '}';
+      socket.emit('subscribe', data=data);
+      $('#subscribe').hide();
+      $('#unsubscribe').show();
+      $('#subscribe_topic').prop('readonly', true);
+    });
+
+    $('#unsubscribe').click(function(event) {
+      socket.emit('unsubscribe_all');
+      $('#subscribe').show();
+      $('#unsubscribe').hide();
+      $('#subscribe_topic').prop('readonly', false);
+    });
+
+    socket.on('mqtt_message', function(data) {
+      console.log(data);
+      var text = '(' + data['topic'] + ' qos: ' + data['qos'] + ') ' + data['payload'];
+      var $textarea = $('#subscribe_messages');
+      $textarea.val($textarea.val() + text + '\n');
+    })
   });
 </script>
-</body>
-</html>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1>Flask-MQTT Example</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Publish MQTT Message</h3>
+        </div>
+        <div class="panel-body">
+          <div class="col-xs-12">
+            <div class="row">
+              <div class="form-horizontal">
+                <div class="form-group">
+                  <label class="control-label col-xs-4">Topic: </label>
+                  <div class="col-xs-8">
+                    <input id="topic" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-4">Message: </label>
+                  <div class="col-xs-8">
+                    <input id="message" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-4">Qos: </label>
+                  <div class="col-xs-8">
+                    <select id="qos" class="form-control">
+                      <option value=0>0</option>
+                      <option value=1>1</option>
+                      <option value=2>2</option>
+                    </select>
+                  </div> 
+                </div>
+                <div class="form-group">
+                  <div class="col-xs-8 col-xs-offset-4">
+                    <button id="publish" class="btn btn-primary">Publish</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Subscribe MQTT Messages</h3>
+        </div>
+        <div class="panel-body">
+          <div class="col-xs-12">
+            <div class="row">
+              <div class="form-horizontal">
+                <div class="form-group">
+                  <label class="control-label col-xs-4">Topic:</label>
+                  <div class="col-xs-8">
+                    <input id="subscribe_topic" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-4">Qos: </label>
+                  <div class="col-xs-8">
+                    <select id="subscribe_qos" class="form-control">
+                      <option value=0>0</option>
+                      <option value=1>1</option>
+                      <option value=2>2</option>
+                    </select>
+                  </div> 
+                </div>
+                <div class="form-group">
+                  <div class="col-xs-8 col-xs-offset-4">
+                    <button id="subscribe" class="btn btn-primary">Subscribe</button>
+                    <button id="unsubscribe" class="btn btn-default" style="display: none;" >Unsubscribe</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-4">Messages:</label>
+                  <div class="col-xs-8">
+                    <textarea id="subscribe_messages" class="form-control" rows=10></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
