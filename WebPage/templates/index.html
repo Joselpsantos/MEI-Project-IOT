@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bootstrap Demo</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-  <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
 </head>
 <body>
   <div class="container">
@@ -28,10 +27,18 @@
       <button type="button" class="btn btn-primary" id="setTempBtn">Definir</button>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script type="text/javascript" charset="utf-8">
 
-  <script>
-    const socket = io();
-    document.getElementById("on").addEventListener("click", function() {
+    $(document).ready(function() {
+
+ var socket =io.connect('http://' + document.domain + ':' + location.port);
+ socket.on('connect', function() {
+  socket.emit('my event', {data: 'I\'m connected!'});
+});
+ 
+ document.getElementById("on").addEventListener("click", function() {
        
         socket.emit("ledControl", "on");
     })
@@ -41,6 +48,12 @@
         socket.emit("ledControl", "off");
     })
 
+
+
+    
+   
+
+    /*
     document.getElementById("join-btn").addEventListener("click", function() {
         let username = document.getElementById("username").value;
 
@@ -53,15 +66,13 @@
         document.getElementById("chat").style.display = "block";
         document.getElementById("landing").style.display = "none";
         document.getElementById("controls").style.display = "inline";
-    })
-
-    socket.on("new_message", function(data) {
-        document.getElementById("message").innerHTML = data.toString();
-    })
-
-    socket.io.on("error", (error) => {
-              document.getElementById("message").innerHTML = 'Erro: ' + error;
-    })
+    })*/
+    socket.on('message', function(data) {
+      console.log('Received message:', data);
+      document.getElementById('message').innerText = data;
+    });
+  
+  });
 </script>
 </body>
 </html>
