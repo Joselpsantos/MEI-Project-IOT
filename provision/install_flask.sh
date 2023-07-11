@@ -33,7 +33,7 @@ virtualenv flask
 sleep 5s
 
 echo -e "$MSG_COLOR$(hostname): Activate flask virtual environment\033[0m"
-source flask/bin/activate
+source flask/bin/avagrant ctivate
 sleep 5s
 
 pip install flask Flask-MQTT Flask-SocketIO eventlet Flask-Bootstrap gevent netifaces

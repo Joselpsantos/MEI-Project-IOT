@@ -50,7 +50,7 @@ def handle_publish(json_str):
 
 @socketio.on('auto')
 def handle_publish(json_str):
-    mqtt.publish("control", "auto " + json_str, 0)
+    mqtt.publish("control", "\"AUTO\"," + json_str, 0)
     print("auto " + json_str)  
 
 @socketio.on('subscribe')

@@ -44,12 +44,18 @@
       var ledStatus = data; // Assuming the received data is the LED status
       console.log(data);
       $('#led_status').text('Status do LED: ' + ledStatus);
+      var text = ledStatus;
+      var $textarea = $('#subscribe_messages');
+      $textarea.val($textarea.val() + text + '\n');
     });
 
     socket.on('curr_temp', function(data) {
       var ledStatus = data; // Assuming the received data is the LED status
       console.log(data);
       $('#temperature').text('Temperatura: ' + ledStatus);
+      var text = ledStatus;
+      var $textarea = $('#subscribe_messages');
+      $textarea.val($textarea.val() + text + '\n');
     });
 
     socket.on('mqtt_message', function(data) {
@@ -95,6 +101,9 @@
       <input type="range" class="form-range" id="tempRange" min="10" max="40" step="1">
       <p id="tempValue">Temperatura: <span id="tempSpan"></span></p>
       <button type="button" class="btn btn-primary" id="setTempBtn">Definir</button>
+    </div>
+    <div class="col-xs-8">
+      <textarea id="subscribe_messages" class="form-control" rows=10></textarea>
     </div>
   </div>
   {% endblock %}
