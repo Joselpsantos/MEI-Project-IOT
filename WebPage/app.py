@@ -50,33 +50,46 @@ def getIpEnd():
 
 @socketio.on('led')
 def handle_publish(json_str):
-    #data = json.loads(json_str)
     mqtt.publish("control", json_str, 0)
     print(json_str)
 
 @socketio.on('subscribe')
 def handle_subscribe(json_str):
-    data = json.loads(json_str)
-    mqtt.subscribe(data['topic'], data['qos'])
-    print("Subscribed: " + data['topic'])
-
+    #data = json.loads(json_str)
+    mqtt.subscribe("control", 0)
+    print("Subscribed: control")
+    mqtt.subscribe("temperature")
+    print("Subscribed: temperature")
+    
 @socketio.on('unsubscribe_all')
 def handle_unsubscribe_all():
     mqtt.unsubscribe_all()
 
+@socketio.on('page_close')
+def handle_page_close(msg):
+    print("Page closed")
+    mqtt.publish("control", "unsubscribe", 0)
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
-    data = dict(
-        topic=message.topic,
-        payload=message.payload.decode(),
-        qos=message.qos,
-    )
-    
-    print(message)
-    if data.topic == "control":
-        print(data.payload)
-        socketio.emit('led_status', data=data.payload)
+    payload = message.payload.decode()  # Convert payload to string
+    topic = message.topic
+    qos = message.qos
+    retained = message.retain
+    data = {
+        'payload': payload,
+        'topic': topic,
+        'qos': qos,
+        'retained': retained
+    }
+    if data['topic'] == "control" :
+        print("Message received on topic: " + data["topic"] + " with the message: " + data["payload"])
+        if data["payload"] != "on" or data["payload"] != "off" or data["payload"] != "unsubscribe":
+            socketio.emit('led_status', data=data["payload"])
+        
+    if data['topic'] == "temperature" :
+        print("Message received on topic: " + data["topic"] + " with the message: " + data["payload"])
+        socketio.emit('curr_temp', data=data["payload"])
 
 
 @mqtt.on_log()

@@ -11,6 +11,16 @@
 <script type="text/javascript" charset="utf-8">
   $(document).ready(function() {
     var socket = io.connect('http://' + document.domain + ':' + location.port);
+  
+    socket.on('connect', function() {
+      // Send a message to Flask on page load
+      socket.emit('subscribe', 'Hello, Flask!');
+    });
+
+    $(window).on('beforeunload', function() {
+      // Send a message to Flask before the page closes
+      socket.emit('page_close', 'Goodbye, Flask!');
+    });
 
     $('#led_on').click(function(event) {
       //var data = '{"topic": "control", "message": "on, "qos": ' + qos + '}';
@@ -43,7 +53,14 @@
 
     socket.on('led_status', function(data) {
       var ledStatus = data; // Assuming the received data is the LED status
+      console.log(data);
       $('#led_status').text('Status do LED: ' + ledStatus);
+    });
+
+    socket.on('curr_temp', function(data) {
+      var ledStatus = data; // Assuming the received data is the LED status
+      console.log(data);
+      $('#temperature').text('Temperatura: ' + ledStatus);
     });
 
     socket.on('mqtt_message', function(data) {
@@ -59,15 +76,14 @@
 {% block content %}
   <div class="container">
     <h1>Bem-vindo!</h1>
-    <p>O Raspberry Pi Pico W está conectado, com o IP {{ip_address}}</p>
-    <h2>Temperatura: {{temperature}}</h2>
+    <h2 id="temperature">Temperatura: </h2>
     <br/>
     <div class="btn-group" role="group" aria-label="Modo">
       <button type="button" class="btn btn-primary" id="led_on">On</button>
       <button type="button" class="btn btn-danger" id="led_off">Off</button>
       <button type="button" class="btn btn-secondary" id="autoBtn">Auto</button>
     </div>
-    <h2>Status do LED: {{led_status}}</h2>
+    <h2 id="led_status">Status do LED: </h2>
     
     <div id="autoControl" style="display: none;">
       <h3>Controle de Temperatura Automático</h3>
