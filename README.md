@@ -140,19 +140,19 @@ config: módulo personalizado que contém algumas configurações.
 
 <b>machine</b>: módulo para controle de hardware do Raspberry Pi Pico.
 
-<b>network: módulo para configuração e gerenciamento de redes.
+<b>network</b>: módulo para configuração e gerenciamento de redes.
 
-<b>json: módulo para trabalhar com JSON.
+<b>json</b>: módulo para trabalhar com JSON.
 
-<b>I2C, Pin: classes do módulo machine para controle de I2C e pinos.
+<b>I2C, Pin</b>: classes do módulo machine para controle de I2C e pinos.
 
-<b>LcdApi, I2cLcd: classes para controlar um display LCD via I2C.
+<b>LcdApi, I2cLcd</b>: classes para controlar um display LCD via I2C.
 
-<b>utime: módulo para trabalhar com tempo.
+<b>utime</b>: módulo para trabalhar com tempo.
 
-<b>_thread: módulo para suporte a threads.
+<b>_thread</b>: módulo para suporte a threads.
 
-<b>micropython: módulo com funções específicas do Micropython.
+<b>micropython</b>: módulo com funções específicas do Micropython.
 
 <b>MQTTClient</b>: classe para criar um cliente MQTT.
 
