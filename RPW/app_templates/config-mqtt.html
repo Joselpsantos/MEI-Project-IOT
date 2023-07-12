@@ -10,45 +10,25 @@
 <body>
   <div class="container">
     <h2 class="mt-4">Configurações MQTT</h2>
-<<<<<<<< HEAD:WebComponent/WebPage/templates/config-mqtt.html
-    <button class="btn btn-primary mt-3" href="/">Sair</button>
-    <form action="/config/ok" method="POST">
-      <div class="form-group">
-        <label for="mqttServer">Servidor MQTT:</label>
-        <input type="text" class="form-control" id="mqttServer" placeholder="Endereço do servidor MQTT">
-========
     <form action="/config" method="POST">
       <div class="form-group">
         <label for="mqttServer">Servidor MQTT:</label>
         <input type="text" class="form-control" id="mqttServer" name="mqttServer" placeholder="Endereço do servidor MQTT" value="{{mqtt_server}}">
->>>>>>>> main:RPW/app_templates/config-mqtt.html
       </div>
 
       <div class="form-group">
         <label for="mqttUser">Utilizador MQTT:</label>
-<<<<<<<< HEAD:WebComponent/WebPage/templates/config-mqtt.html
-        <input type="text" class="form-control" id="mqttUser" placeholder="Utilizador MQTT">
-========
         <input type="text" class="form-control" id="mqttUser" name="mqttUser" placeholder="Utilizador MQTT" value="{{mqtt_user}}">
->>>>>>>> main:RPW/app_templates/config-mqtt.html
       </div>
 
       <div class="form-group">
         <label for="mqttPassword">Senha MQTT:</label>
-<<<<<<<< HEAD:WebComponent/WebPage/templates/config-mqtt.html
-        <input type="password" class="form-control" id="mqttPassword" placeholder="Senha MQTT">
-========
         <input type="password" class="form-control" id="mqttPassword" name="mqttPassword" placeholder="Senha MQTT">
->>>>>>>> main:RPW/app_templates/config-mqtt.html
       </div>
 
       <div class="form-group">
         <label for="mqttTopic">Tópico Subscrito:</label>
-<<<<<<<< HEAD:WebComponent/WebPage/templates/config-mqtt.html
-        <input type="text" class="form-control" id="mqttTopic" placeholder="Tópico subscrito">
-========
         <input type="text" class="form-control" id="mqttTopic" name="mqttTopic" placeholder="Tópico subscrito" value="{{mqtt_topic}}">
->>>>>>>> main:RPW/app_templates/config-mqtt.html
       </div>
 
       <div class="form-check">
@@ -72,8 +52,4 @@
     });
   </script>
 </body>
-<<<<<<<< HEAD:WebComponent/WebPage/templates/config-mqtt.html
 </html>
-========
-</html>
->>>>>>>> main:RPW/app_templates/config-mqtt.html
