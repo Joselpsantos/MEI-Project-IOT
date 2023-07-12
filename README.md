@@ -76,6 +76,50 @@ Iniciar as VM
 vagrant up
 ~~~
 
+Aceder ao terminal da VM
+
+~~~bash  
+vagrant ssh broker
+~~~
+
+Por vezes os scripts necessários para instalar o Flask não são devidamente executados, caso aconteça seguir os seguintes passos:
+
+Criar o ambiente virtual
+
+~~~bash  
+virtualenv flask
+~~~
+
+Ativar o ambiente virtual
+
+~~~bash  
+source flask/bin/activate
+~~~
+
+(Caso necessário) Instalar dependências do Flask
+
+~~~bash  
+pip install flask Flask-MQTT Flask-SocketIO eventlet Flask-Bootstrap gevent netifaces
+~~~
+
+Mudar para a diretoria partilhada onde está o ficheiro app.py
+
+~~~bash  
+cd ../../vagrant/WebPage
+~~~
+
+Executar a aplicação
+
+~~~bash  
+python app.py
+~~~
+
+Abrir um novo terminal
+
+~~~bash  
+lt --subdomain meiiotipt --port 5000
+~~~
+
 ## Variáveis  
 
 Definir o user e password, no ficheiro "install_mosquitto.sh":  
