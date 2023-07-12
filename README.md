@@ -122,12 +122,23 @@ vagrant reload
 ## Relatório  
 
 Objetivo do projeto:
-Configurar um dispositivo IOT, por forma a criar um sistema automatizado, e com ligação a um broker MQTT, sendo que teria de possuir um sistema de autenticação na rede WIFI, e uma condição de funcionamento.
+
+Configurar um dispositivo IOT, por forma a criar um sistema automatizado, e com ligação a um broker MQTT, sendo que teria de possuir um sistema de autenticação na rede WIFI, e uma condição de automação e funcionamento.
+
+
+Hardware utilizado:
  
 
-Para desenvolver o programa, que vai ser executado no RPW Este é um código Python que consiste em dois ficheiros principais: main.py e functions.py. Iremos descrever cada um deles em detalhe:
+Programa utilizado:
 
-main.py:
+Para desenvolver o programa em Python (Microphtyon), que vai ser executado no RPW, recorremos ao software <b>Thonny</b>.
+
+
+Este é um código Python que consiste em dois ficheiros principais: main.py e functions.py. 
+
+Iremos descrever cada um deles em detalhe:
+
+main.py - ficheiro responsável pela execução do código de inicialização:
 
 Importações:
 
@@ -204,9 +215,32 @@ Define a variável lcd_connected como True se a inicialização for bem-sucedida
 <b>mqtt_listener()</b>: função assíncrona para ouvir as mensagens MQTT.
 
 
+### Conexão com o WI-FI
+```
+  if not is_connected_to_wifi():
+    # Conexão ruim. Remover arquivo
+    print("Dificuldades a ligar ao Wi-Fi!")
+    print(wifi_credentials)
+    os.remove(config.WIFI_FILE)
+    functions.machine_reset()
+```
+
+
 
 Verifica se existe um ficheiro de configuração do Wi-Fi. Se existir, tenta conectar ao Wi-Fi e iniciar o cliente MQTT. Caso contrário, entra no modo de configuração do Wi-Fi.
-application_mode(): função para executar o modo de aplicação após a conexão bem-sucedida ao Wi-Fi.
+
+
+### Definir as rotas
+    server.add_route("/", handler=app_index, methods=["GET"])
+    server.add_route("/toggle", handler=app_toggle_led, methods=["GET"])
+    
+    server.add_route("/on", handler=app_rega_on, methods=["GET"])
+    server.add_route("/off", handler=app_rega_off, methods=["GET"])
+    server.add_route("/auto", handler=app_rega_auto, methods=["GET"])
+    server.add_route("/config", handler=app_mqtt_config, methods=["GET", "POST"])
+    # server.add_route("/log", handler=app_log, methods=["GET"])
+    # Adicionar outras rotas
+
 
 Define rotas e controladores de solicitações HTTP.
 Inicializa uma thread separada para atualizar o LCD com a temperatura atual.
@@ -216,7 +250,7 @@ Se existir, verifica o modo de inscrição e inicia uma thread separada para ouv
 Bloco final para iniciar o servidor web.
  
 
-functions.py:
+# functions.py:
 
 Importações:
 
@@ -265,7 +299,7 @@ setup_mode(): Entra no modo de configuração do Wi-Fi, onde o usuário pode for
 application_mode(client): Executa o modo de aplicação após a conexão bem-sucedida ao Wi-Fi. Define rotas e controladores de solicitações HTTP para a aplicação.
 
 
-Essas são as principais partes do código e o que cada trecho faz. Cada função desempenha um papel específico no controle do sistema de rega, comunicação MQTT, atualização do LCD e configuração do Wi-Fi.
+Essas são as principais partes do código e o que cada função faz. Cada função desempenha um papel específico no controlo do sistema de rega, comunicação MQTT, atualização do LCD, configuração do Wi-Fi, e do controlo dos LEDs.
 
 
 #### FLASK - Painel de controlor
