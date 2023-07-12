@@ -138,25 +138,25 @@ Importações:
 
 config: módulo personalizado que contém algumas configurações.
 
-machine: módulo para controle de hardware do Raspberry Pi Pico.
+<b>machine</b>: módulo para controle de hardware do Raspberry Pi Pico.
 
-network: módulo para configuração e gerenciamento de redes.
+<b>network: módulo para configuração e gerenciamento de redes.
 
-json: módulo para trabalhar com JSON.
+<b>json: módulo para trabalhar com JSON.
 
-I2C, Pin: classes do módulo machine para controle de I2C e pinos.
+<b>I2C, Pin: classes do módulo machine para controle de I2C e pinos.
 
-LcdApi, I2cLcd: classes para controlar um display LCD via I2C.
+<b>LcdApi, I2cLcd: classes para controlar um display LCD via I2C.
 
-utime: módulo para trabalhar com tempo.
+<b>utime: módulo para trabalhar com tempo.
 
-_thread: módulo para suporte a threads.
+<b>_thread: módulo para suporte a threads.
 
-micropython: módulo com funções específicas do Micropython.
+<b>micropython: módulo com funções específicas do Micropython.
 
-MQTTClient: classe para criar um cliente MQTT.
+<b>MQTTClient</b>: classe para criar um cliente MQTT.
 
-uasyncio as asyncio: biblioteca para programação assíncrona no Micropython.
+<b>uasyncio</b>: biblioteca para programação assíncrona no Micropython.
 
 <b>Inicialização de conexões:</b>
 
