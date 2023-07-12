@@ -374,6 +374,12 @@ Para a execução deste projeto foi escolhido o flask porque este tem integraç�
 
 Aquando a conexão de um cliente é apresentada uma caixa de texto que assume a função de log do tráfego dos websockets em tempo real. Para além dos logs apresentados no lado do servidor guardados num ficheiro de text message_log.txt'
 
+Para garantir o acesso ao serivdor web a partir de qualquer rede foi utilizada a ferramenta open source 'localtunnel'. É possível definir um túnel de forma muito simples, ao executar o comando  'lt --subdomain <doman-name> --port <Port>' a aplicação está acessível a qualquer um. A ferramenta é intencionada para o uso em testes, como tal antes de um cliente estabelecer ligação pela primeira vez tem de colocar o ip público do servidor.
+
+image.png
+
+Numa fase intermédia a solução foi pensada para que não seja necessário colocar o endereço ip do broker de forma manual, mas sim ao aceder ao endpoint do serviço web /ip  conseguisse saber a localização do broker e estabelecer um túnel reverso. Tal não foi implementado devido à falta de tempo.
+
 ## Funcionamento
 
 #### Funções assíncronas
@@ -383,8 +389,7 @@ Funções que executam operações demoradas (I/O ou CPU intensive), em simultâ
 Com as funções assíncronas, podemos executar várias tarefas em simultâneo, e com tratamento individualizado dos erros para cada tarefa.
 
 #### Threads
-NOTA: COLOCAR IMAGEM
-
+image.png
 
 ## Testes
 Toda a solução passou por diversos testes para assegurar a correta operacionalidade.
@@ -408,9 +413,8 @@ Passamos a elencar as mesmas:
 - optimizar o código;
 - adicionar um LED específico para o modo AUTO;
 - melhorar em termos gráficos a administração, tanto em termos de RPW como de FLASK;
-- implementar uma solução melhor de conectividade exterior
-- 
-- 
+- implementar uma solução melhor de conectividade exterior;
+- melhoria dos scripts de provisionamento;
 
 
 ## Conclusão
@@ -421,3 +425,7 @@ No final este projeto, ficámos capazes de programar um dispositivo IOT, denomin
 - [Peppe8o](https://peppe8o.com/mqtt-and-raspberry-pi-pico-w-start-with-mosquitto-micropython/)
 - [Steve´s Internet Guide](http://www.steves-internet-guide.com/mqtt/)
 - [Tomshardware](https://www.tomshardware.com/how-to/connect-raspberry-pi-pico-w-to-the-internet)
+- https://github.com/localtunnel/localtunnel
+-   https://github.com/stlehmann/Flask-MQTT
+-   https://github.com/miguelgrinberg/Flask-SocketIO
+
