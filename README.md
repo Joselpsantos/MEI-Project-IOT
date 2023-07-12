@@ -3,6 +3,8 @@
 Criação de um sistema de rega, acente na placa de desenvolvimento Raspberry Pico W (doravante denoinado de "RPW"), onde foi implementado Captive Portal para efetuar a ligação do RPW à rede WI-FI, e posterior configuração do broker num servidor WEB instalado na propria memória.
 Foi desenvolvido também, em Flask, um portal de gestão utilizando Websockets.
 
+A ligação feita pelo exterior, fica a carga da solução NGROK.
+
 
 
 # Índice  
@@ -32,10 +34,10 @@ Foi desenvolvido também, em Flask, um portal de gestão utilizando Websockets.
 
 **Hardware:** 
 - 1x Raspberry Pico W (doravante denominado de RPW)
-- 1x Relay 2 canais
 - 2x LED
 - 1x LCD duas linhas 
 - 5x resistências
+- 14x fios de ligação
 
 ## Características  
 
@@ -48,7 +50,7 @@ Raspberry Pico w:
 - Ligar ao wireless com captive portal
 - Ligação ao broker feita em página dedicada
 - Envio da temperatura para o Broker
-- Receção de instrução para Ligar/desligar a Rega, ou colocação em modo automático, defenindo a partir de que temperatura deverá ligar 
+- Receção de instrução para Ligar/desligar a Rega, ou colocação em modo automático, definindo a partir de que temperatura deverá ligar o sistema.
 
 ## Iniciar o projeto 
 
@@ -131,7 +133,7 @@ Outro portal, centralizado, onde poderemos comunicar com o RPW, e podermos expan
 Para desenvolver o programa em Python (Microphtyon), que vai ser executado no RPW, recorremos ao software <b>Thonny</b>.
 
 
-### Descrição do programa desenvolvido.
+## Descrição do programa desenvolvido.
 
 Código Python que consiste em dois ficheiros principais: main.py e functions.py. 
 
@@ -355,10 +357,10 @@ async def rega_auto(request, client):
         return "Temperatura inválida.", 400
     client.publish("Rega", "Automático")
 ```
-Na função aqui transcrita, foi a função mais desafiante de elaborar do projeto.
-Esta função teria de estar sempre à escuta, o que implica utilização de recursos, e executar comandos, também com alguma complexidade. 
+Na função aqui transcrita, que foi a função mais desafiante de elaborar do projeto, tem de ter em consideração uma série de cenários.
+Esta função terá de estar sempre à escuta, o que implica utilização de recursos, e executar comandos, também com alguma complexidade, o que em termos de hardware acaba por ser limitado para a execução do mesmo.
+Nesta função, acendemos a luz indicadora de rega em modo AUTO, vai pesquisar no ficheiro de configuração os dados do MQTT, faz o print para o LCD, obtém a temperatura atual e a definida como TARGET, e executa o comando para ligar a rega. 
 
-Irá ativar
 
 #### FLASK - Painel de controlor
 
@@ -366,7 +368,11 @@ Irá ativar
 ## Funcionamento
 
 #### Funções assíncronas
-NOTA: COLOCAR IMAGEM
+<img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*Dyr7amckevWGqes1PTv0SQ.png" width="400">
+
+Funções que executam operações demoradas (I/O ou CPU intensive), em simultâneo. O normal no código python é ser executado por ordem que aparece no código, e caso alguma linha dê erro, todo o programa crasha e pára a execução.
+Com as funções assíncronas, podemos executar várias tarefas em simultâneo, e com tratamento individualizado dos erros para cada tarefa.
+
 #### Threads
 NOTA: COLOCAR IMAGEM
 
@@ -377,7 +383,18 @@ Na execução deste projeto, utilizámos um LCD, uma ligação AP, e um broker, 
 Para contornar o problema constante de esgotar os recursos, tivemos de procurar soluções alternativas, pelo que fizemos uso de threads, e de funções assíncronas.
 
 Mesmo utilizando estas tecnologias, reparámos que o LCD é o grande responsável por esgotar os recursos do RPW. 
-Outra dificuldade, que após muitos testes, ficámos sem ter a certeza de onde estaria o problema, é que a conexão ao broker é instável. Por vezes tem dificuldade em ligar-se, e outras vezes, deixa de enviar as mensagens. Recorrendo aos logs, parece não chegar a informação por parte do RPW, contudo, o código continua a ser executado corretamente.
+Outra dificuldade, que após muitos testes, ficámos sem ter a certeza de onde estaria o problema, é que a conexão ao broker é instável. Por vezes tem dificuldade em ligar-se, e outras vezes, deixa de enviar as mensagens. Recorrendo aos logs, parece não chegar a informação por parte do RPW, contudo, o código continua a ser executado corretamente. Levanos a crer, que seja alguma instabilidade do WI-FI.
+
+## Melhorias ao projeto
+Apesar do programa estar bastante funcional, e cheio de recursos, consideramos que há lugar para melhorarias ao sistema.
+
+Passamos a elencar as mesmas:
+- optimizar o código;
+- adicionar um LED específico para o modo AUTO;
+- melhorar em termos gráficos a administração, tanto em termos de RPW como de FLASK;
+- implementar uma solução melhor de conectividade exterior
+- 
+- 
 
 
 ## Conclusão
