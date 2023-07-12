@@ -39,6 +39,9 @@ A ligação feita pelo exterior, fica a carga da solução NGROK.
 - 5x resistências
 - 14x fios de ligação
 
+<img src="/Imagens/rpicogpin.png" width="400">
+
+
 ## Características  
 
 VM´s:
