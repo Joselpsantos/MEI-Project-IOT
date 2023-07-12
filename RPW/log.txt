@@ -1,0 +1,135 @@
+n port 80
+2021-01-01 00:00:06 [debug    / 116kB]   - connecting
+2023-07-12 09:31:52 [debug    / 117kB]   - got ip address
+2023-07-12 09:31:53 [info     / 112kB] > starting web server on port 80
+2023-07-12 09:34:53 [info     / 102kB] > GET /on (200 OK) [697ms]
+2023-07-12 09:34:53 [debug    /  95kB]   - got ip address
+2023-07-12 09:34:53 [debug    /  84kB] > parsed template: app_templates/index.html (took 19 ms)
+2023-07-12 09:34:53 [info     /  82kB] > GET / (200 OK) [506ms]
+2023-07-12 09:42:01 [debug    / 117kB]   - got ip address
+2023-07-12 09:42:14 [debug    / 116kB]   - connecting
+2023-07-12 09:42:17 [debug    / 115kB]   - connecting
+2023-07-12 09:42:34 [debug    / 116kB]   - connecting
+2023-07-12 09:42:37 [debug    / 115kB]   - connecting
+2023-07-12 09:43:02 [debug    / 116kB]   - connecting
+2023-07-12 09:43:05 [debug    / 115kB]   - connecting
+2023-07-12 09:43:07 [info     / 111kB] > starting web server on port 80
+2023-07-12 09:43:26 [info     / 105kB] > GET /on (200 OK) [474ms]
+2023-07-12 09:43:26 [debug    /  98kB]   - got ip address
+2023-07-12 09:43:26 [debug    /  87kB] > parsed template: app_templates/index.html (took 20 ms)
+2023-07-12 09:43:26 [info     /  85kB] > GET / (200 OK) [405ms]
+2023-07-12 09:43:29 [info     / 104kB] > GET /off (200 OK) [430ms]
+2023-07-12 09:43:32 [debug    /  97kB]   - got ip address
+2023-07-12 09:43:32 [debug    /  86kB] > parsed template: app_templates/index.html (took 19 ms)
+2023-07-12 09:43:32 [info     /  84kB] > GET / (200 OK) [455ms]
+2023-07-12 09:46:41 [info     /  92kB] > GET /config (200 OK) [98ms]
+2021-01-01 00:00:06 [debug    / 116kB]   - connecting
+2021-01-01 00:00:09 [debug    / 114kB]   - connecting
+2021-01-01 00:00:10 [info     / 111kB] > starting web server on port 80
+2023-07-12 09:53:30 [debug    / 116kB]   - got ip address
+2023-07-12 09:53:31 [info     / 111kB] > starting web server on port 80
+2023-07-12 09:53:48 [info     / 100kB] > POST /config (200 OK) [131ms]
+2023-07-12 09:54:02 [debug    / 105kB]   - got ip address
+2023-07-12 09:54:02 [debug    /  94kB] > parsed template: app_templates/index.html (took 21 ms)
+2023-07-12 09:54:02 [info     /  92kB] > GET / (200 OK) [383ms]
+2023-07-12 09:54:05 [info     / 105kB] > GET /on (200 OK) [499ms]
+2023-07-12 09:54:06 [debug    /  98kB]   - got ip address
+2023-07-12 09:54:06 [debug    /  87kB] > parsed template: app_templates/index.html (took 18 ms)
+2023-07-12 09:54:06 [info     /  85kB] > GET / (200 OK) [404ms]
+2023-07-12 09:54:08 [info     / 105kB] > GET /off (200 OK) [362ms]
+2023-07-12 09:54:11 [debug    /  98kB]   - got ip address
+2023-07-12 09:54:11 [debug    /  87kB] > parsed template: app_templates/index.html (took 19 ms)
+2023-07-12 09:54:11 [info     /  85kB] > GET / (200 OK) [480ms]
+2023-07-12 09:56:20 [debug    / 117kB]   - got ip address
+2023-07-12 09:57:20 [debug    / 117kB]   - connecting
+2023-07-12 09:57:23 [debug    / 115kB]   - connecting
+2023-07-12 09:57:25 [info     / 111kB] > starting web server on port 80
+2023-07-12 09:58:07 [info     / 102kB] > GET /off (200 OK) [858ms]
+2023-07-12 09:58:07 [debug    /  95kB]   - got ip address
+2023-07-12 09:58:07 [debug    /  84kB] > parsed template: app_templates/index.html (took 18 ms)
+2023-07-12 09:58:08 [info     /  68kB] > GET / (200 OK) [565ms]
+2023-07-12 09:58:29 [info     / 103kB] > GET /off (200 OK) [715ms]
+2023-07-12 09:58:29 [debug    /  96kB]   - got ip address
+2023-07-12 09:58:30 [debug    /  85kB] > parsed template: app_templates/index.html (took 17 ms)
+2023-07-12 09:58:30 [info     /  83kB] > GET / (200 OK) [433ms]
+2023-07-12 10:06:15 [debug    / 117kB]   - got ip address
+2023-07-12 10:06:25 [info     / 110kB] > starting web server on port 80
+2023-07-12 10:13:26 [debug    / 117kB]   - got ip address
+2023-07-12 10:14:01 [debug    / 117kB]   - connecting
+2023-07-12 10:14:04 [debug    / 115kB]   - connecting
+2023-07-12 10:20:14 [debug    / 116kB]   - connecting
+2023-07-12 10:20:17 [debug    / 114kB]   - connecting
+2023-07-12 10:20:28 [info     / 107kB] > starting catch all dns server on port 53
+2023-07-12 10:20:28 [info     / 104kB] > starting web server on port 80
+2023-07-12 10:21:18 [debug    / 116kB]   - got ip address
+2023-07-12 10:21:47 [info     / 111kB] > starting catch all dns server on port 53
+2023-07-12 10:21:47 [info     / 109kB] > starting web server on port 80
+2023-07-12 10:21:55 [debug    /  97kB] > parsed template: ap_templates/redirect.html (took 13 ms)
+2023-07-12 10:21:55 [info     /  94kB] > GET / (200 OK) [142ms]
+2023-07-12 10:22:15 [debug    / 116kB]   - got ip address
+2023-07-12 10:22:26 [info     / 110kB] > starting catch all dns server on port 53
+2023-07-12 10:22:26 [info     / 108kB] > starting web server on port 80
+2023-07-12 10:23:08 [debug    / 115kB]   - got ip address
+2023-07-12 10:23:18 [info     / 110kB] > starting catch all dns server on port 53
+2023-07-12 10:23:19 [info     / 108kB] > starting web server on port 80
+2023-07-12 10:23:49 [info     /  99kB] > GET /config (200 OK) [264ms]
+2023-07-12 10:23:55 [debug    / 100kB]   - got ip address
+2023-07-12 10:23:55 [debug    /  90kB] > parsed template: app_templates/index.html (took 20 ms)
+2023-07-12 10:23:55 [info     /  87kB] > GET / (200 OK) [416ms]
+2023-07-12 10:23:58 [info     / 103kB] > GET /on (200 OK) [714ms]
+2023-07-12 10:23:58 [debug    /  96kB]   - got ip address
+2023-07-12 10:23:59 [debug    /  86kB] > parsed template: app_templates/index.html (took 18 ms)
+2023-07-12 10:23:59 [info     /  84kB] > GET / (200 OK) [475ms]
+2023-07-12 10:24:01 [info     / 103kB] > GET /off (200 OK) [543ms]
+2023-07-12 10:24:01 [debug    /  96kB]   - got ip address
+2023-07-12 10:24:02 [debug    /  86kB] > parsed template: app_templates/index.html (took 18 ms)
+2023-07-12 10:24:02 [info     /  84kB] > GET / (200 OK) [540ms]
+2023-07-12 10:24:58 [info     /  97kB] > GET /off (200 OK) [756ms]
+2023-07-12 10:24:59 [debug    /  89kB]   - got ip address
+2023-07-12 10:24:59 [debug    /  79kB] > parsed template: app_templates/index.html (took 18 ms)
+2023-07-12 10:24:59 [info     /  77kB] > GET / (200 OK) [464ms]
+2021-01-01 00:00:05 [debug    / 116kB]   - connecting
+2021-01-01 00:00:09 [debug    / 114kB]   - connecting
+2023-07-12 10:37:21 [debug    / 116kB]   - got ip address
+2023-07-12 10:37:30 [info     / 103kB] > starting web server on port 80
+2023-07-12 10:37:50 [debug    /  94kB]   - got ip address
+2023-07-12 10:37:50 [debug    / 100kB] > parsed template: app_templates/index.html (took 31 ms)
+2023-07-12 10:37:50 [info     /  98kB] > GET / (200 OK) [463ms]
+2023-07-12 10:37:53 [info     / 104kB] > GET /on (200 OK) [337ms]
+2023-07-12 10:37:53 [debug    /  97kB]   - got ip address
+2023-07-12 10:37:53 [debug    /  86kB] > parsed template: app_templates/index.html (took 19 ms)
+2023-07-12 10:37:53 [info     /  84kB] > GET / (200 OK) [325ms]
+2023-07-12 10:37:57 [info     / 104kB] > GET /off (200 OK) [526ms]
+2023-07-12 10:37:57 [debug    /  97kB]   - got ip address
+2023-07-12 10:37:57 [debug    /  86kB] > parsed template: app_templates/index.html (took 21 ms)
+2023-07-12 10:37:57 [info     /  84kB] > GET / (200 OK) [383ms]
+2023-07-12 10:38:12 [info     /  94kB] > GET /off (200 OK) [803ms]
+2023-07-12 10:38:13 [debug    /  86kB]   - got ip address
+2023-07-12 10:38:13 [debug    /  62kB] > parsed template: app_templates/index.html (took 19 ms)
+2023-07-12 10:38:13 [info     /  60kB] > GET / (200 OK) [448ms]
+2023-07-12 10:38:17 [info     /  94kB] > GET /on (200 OK) [757ms]
+2023-07-12 10:38:17 [debug    /  86kB]   - got ip address
+2023-07-12 10:38:17 [debug    /  76kB] > parsed template: app_templates/index.html (took 19 ms)
+2023-07-12 10:38:18 [info     /  74kB] > GET / (200 OK) [436ms]
+2023-07-12 10:38:20 [info     /  94kB] > GET /off (200 OK) [597ms]
+2023-07-12 10:38:20 [debug    /  86kB]   - got ip address
+2023-07-12 10:38:20 [debug    /  76kB] > parsed template: app_templates/index.html (took 19 ms)
+2023-07-12 10:38:20 [info     /  74kB] > GET / (200 OK) [523ms]
+2023-07-12 10:39:18 [debug    /  86kB]   - got ip address
+2023-07-12 10:39:18 [debug    /  76kB] > parsed template: app_templates/index.html (took 20 ms)
+2023-07-12 10:39:18 [info     /  74kB] > GET / (200 OK) [314ms]
+2023-07-12 10:39:43 [info     /  87kB] > GET /off (200 OK) [619ms]
+2023-07-12 10:39:43 [debug    /  80kB]   - got ip address
+2023-07-12 10:39:44 [debug    /  79kB] > parsed template: app_templates/index.html (took 677 ms)
+2023-07-12 10:39:44 [info     /  77kB] > GET / (200 OK) [971ms]
+2023-07-12 10:41:26 [debug    / 117kB]   - got ip address
+2021-01-01 00:00:06 [debug    / 117kB]   - connecting
+2021-01-01 00:00:18 [info     / 103kB] > starting web server on port 80
+2023-07-12 12:35:46 [debug    / 117kB]   - got ip address
+2023-07-12 12:35:59 [debug    / 117kB]   - connecting
+2023-07-12 12:36:02 [debug    / 115kB]   - connecting
+2023-07-12 12:36:16 [debug    / 117kB]   - connecting
+2023-07-12 12:40:30 [debug    / 117kB]   - connecting
+2023-07-12 12:40:33 [debug    / 115kB]   - connecting
+2021-01-01 00:00:06 [debug    / 117kB]   - connecting
+2021-01-01 00:00:06 [debug    / 117kB]   - connecting
