@@ -265,7 +265,7 @@ Essas são as principais funcionalidades e estrutura do código fornecido. Ele l
  
 No main.py:
 
-Importações: Importa os módulos e pacotes necessários para o funcionamento do código.
+Importações: Importa os módulos necessários para o funcionamento do código.
 
 Inicialização de conexões: Define as conexões, como pinos de LED e configurações do LCD.
 Verificação da conexão do LCD: Verifica se o LCD está conectado corretamente.
@@ -304,6 +304,15 @@ Essas são as principais partes do código e o que cada função faz. Cada funç
 
 #### FLASK - Painel de controlor
 
+
+## Funcionamento
+
+## Dificuldades
+Uma vez que para este projeto foi utilizado o Raspberry Pico W, que é um hardware excelente custo vs benefícios, contudo, para projetos mais elaborados, as suas caracteristicas/recursos ficam limitados.
+
+Na execução deste projeto, utilizámos um LCD, uma ligação AP, e um broker, o que se revelou claramente exigente para o hardware.
+Para contornar o problema constante de esgotar os recursos, tivemos de procurar soluções alternativas, pelo que fizemos uso de threads, e de funções assíncronas.
+Mesmo utilizando estas tecnologias 
 
 ## Bibliografia  
 
