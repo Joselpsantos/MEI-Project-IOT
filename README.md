@@ -371,6 +371,15 @@ Nesta função, acendemos a luz indicadora de rega em modo AUTO, vai pesquisar n
 
 ## Funcionamento
 
+#### Captive Portal
+
+
+#### WEBPI
+<img src="/Imagens/webpi.jpg" width="400">
+
+##### Configuração
+<img src="/Imagens/configportal.jpg" width="400">
+
 #### Funções assíncronas
 <img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*Dyr7amckevWGqes1PTv0SQ.png" width="400">
 
@@ -380,11 +389,13 @@ Com as funções assíncronas, podemos executar várias tarefas em simultâneo, 
 #### Threads
 NOTA: COLOCAR IMAGEM
 
+
 ## Testes
 Toda a solução passou por diversos testes para assegurar a correta operacionalidade.
 
 O captive portal, foi testado em IOS, ANDROID e WINDOWS, tendo efetuado a ligação sem problemas em nenhuma das plataformas.
-A conexão
+Dependendo do serviço de SMTP, o recebimento do mail com o IP do RPW, poderá demorar alguns segundos.
+Após a receção do IP, poderemos aceder ao <IP>/config e configurar o servidor MQTT, utilizador, password, 
 
 ## Dificuldades
 Uma vez que para este projeto foi utilizado o Raspberry Pico W, que é um hardware excelente custo vs benefícios, contudo, para projetos mais elaborados, as suas caracteristicas/recursos ficam limitados.
@@ -394,6 +405,8 @@ Para contornar o problema constante de esgotar os recursos, tivemos de procurar 
 
 Mesmo utilizando estas tecnologias, reparámos que o LCD é o grande responsável por esgotar os recursos do RPW. 
 Outra dificuldade, que após muitos testes, ficámos sem ter a certeza de onde estaria o problema, é que a conexão ao broker é instável. Por vezes tem dificuldade em ligar-se, e outras vezes, deixa de enviar as mensagens. Recorrendo aos logs, parece não chegar a informação por parte do RPW, contudo, o código continua a ser executado corretamente. Levanos a crer, que seja alguma instabilidade do WI-FI.
+
+Se colocarmos o raspberry em subscribe, o mesmo fica impossibilitado de entrar no modo WEBPI, pelo que tivemos de criar um comando para fazer "unsubscribe". Fazendo "unsubscribe" o portal WEBPI volta a ficar operacional. 
 
 ## Melhorias ao projeto
 Apesar do programa estar bastante funcional, e cheio de recursos, consideramos que há lugar para melhorarias ao sistema.
