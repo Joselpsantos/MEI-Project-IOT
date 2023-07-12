@@ -121,26 +121,21 @@ vagrant reload
 
 ## Relatório  
 
-Objetivo do projeto
-Vagrant
-MQTT
-
-
-
-
+Objetivo do projeto:
+Configurar um dispositivo IOT, por forma a criar um sistema automatizado, e com ligação a um broker MQTT, sendo que teria de possuir um sistema de autenticação na rede WIFI, e uma condição de funcionamento.
  
 
-Para desenvolver o programa, que vai ser executado no RPW Este é um código Python que consiste em dois arquivos principais: main.py e functions.py. Vou descrever cada um deles em detalhes:
+Para desenvolver o programa, que vai ser executado no RPW Este é um código Python que consiste em dois ficheiros principais: main.py e functions.py. Iremos descrever cada um deles em detalhe:
 
 main.py:
 
 Importações:
 
-config: módulo personalizado que contém algumas configurações.
+<b>config</b>: módulo personalizado que contém algumas configurações do programa desenvolvido.
 
-<b>machine</b>: módulo para controle de hardware do Raspberry Pi Pico.
+<b>machine</b>: módulo para controlo do hardware do RPW.
 
-<b>network</b>: módulo para configuração e gerenciamento de redes.
+<b>network</b>: módulo para configuração e gestão de redes.
 
 <b>json</b>: módulo para trabalhar com JSON.
 
@@ -154,64 +149,68 @@ config: módulo personalizado que contém algumas configurações.
 
 <b>micropython</b>: módulo com funções específicas do Micropython.
 
-<b>MQTTClient</b>: classe para criar um cliente MQTT.
+<b>MQTTClient</b>: classes para criar um cliente MQTT.
 
 <b>uasyncio</b>: biblioteca para programação assíncrona no Micropython.
 
-<b>Inicialização de conexões:</b>
+#### Inicialização de conexões:
 
-onboard_led, led_r, led_g, led_b: pinos de LED definidos como saída.
+onboard_led, led_r, led_g, led_b: pinos de LED utilizados.
+
 led_status, lcd_connected: variáveis de estado para o LED e o LCD.
-temperature, sensor_temp, conversion_factor: variáveis relacionadas à leitura de temperatura usando um sensor analógico.
+
+temperature, sensor_temp, conversion_factor: variáveis relacionadas à leitura de temperatura usando o sensor interno
 
 I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS: constantes para configurar o LCD.
-i2c: objeto I2C para comunicação com o LCD.
+
 Verificação da conexão do LCD:
 
 Tenta inicializar o objeto lcd do tipo I2cLcd para se comunicar com o LCD.
-Define a variável lcd_connected como True se a inicialização for bem-sucedida, caso contrário, False.
-Dfinição das funções de controle das cores do LED:
+Define a variável lcd_connected como True se a inicialização for bem-sucedida, caso contrário, False. Foi criado esta verificação, para o caso do LCD estar desligado.
 
-led_red(), led_green(), led_blue(): funções para definir a cor do LED acendendo ou apagando os pinos R, G e B.
+#### Definição das funções de controle das cores do LED:
 
-Função get_led_status(): retorna o status atual do LED como uma string ("ligado" ou "desligado").
+<b>led_red(), led_green(), led_blue()</b>: funções para definir a cor do LED acendendo ou apagando os pinos R, G e B.
 
-Função get_available_networks(): verifica as redes Wi-Fi disponíveis e retorna uma lista de seus SSIDs.
+<b>Função get_led_status()</b>: retorna o status atual do LED como uma string ("ligado" ou "desligado").
 
-Função check_temp(): realiza a leitura do sensor de temperatura analógico e converte o valor em temperatura Celsius.
+<b>Função get_available_networks()</b>: verifica as redes Wi-Fi disponíveis e retorna uma lista dos SSIDs.
 
-Função read_temp(): lê a temperatura atual e retorna uma string formatada.
+<b>Função check_temp()</b>: realiza a leitura do sensor de temperatura analógico e converte o valor em temperatura Celsius.
 
-Função read_temp_lcd(): exibe a temperatura atual no LCD se estiver conectado.
+<b>Função read_temp()</b>: lê a temperatura atual e retorna uma string.
 
-Função machine_reset(): reinicia o Raspberry Pi Pico.
+<b>Função read_temp_lcd()</b>: exibe a temperatura atual no LCD se estiver conectado.
 
-<b>Configuração do MQTT:</b>
+<b>Função machine_reset()</b>: reinicia o Raspberry Pi Pico.
 
-topic_sub, topic: tópicos MQTT para assinatura e controle.
+<br>
+<b>Configuração do MQTT</b>:
 
-sub_cb(): função de callback para tratar mensagens MQTT recebidas.
+<b>topic_sub, topic</b>: tópicos MQTT para assinatura e controle.
 
-mqtt_connect(): realiza a conexão com o servidor MQTT e retorna o objeto MQTTClient.
+<b>sub_cb()</b>: função de callback para tratar mensagens MQTT recebidas.
 
-reconnect(): função para reconectar ao servidor MQTT em caso de falha na conexão.
+<b>mqtt_connect()</b>: realiza a conexão com o servidor MQTT e retorna o objeto MQTTClient.
 
-rega_on(), rega_off(): funções para ligar e desligar a rega.
+<b>reconnect()</b>: função para reconectar ao servidor MQTT em caso de falha na conexão.
 
-rega_auto(): função para executar o modo de rega automática com base na temperatura.
+<b>rega_on(), rega_off()</b>: funções para ligar e desligar a rega.
 
-update_conf_file(): atualiza o arquivo de configuração MQTT.
+<b>rega_auto()</b>: função para executar o modo de rega automática com base na temperatura.
 
-mqtt_listener(): função assíncrona para ouvir as mensagens MQTT.
+<b>update_conf_file()</b>: atualiza o ficheiro de configuração MQTT.
 
-try-except block:
+<b>mqtt_listener()</b>: função assíncrona para ouvir as mensagens MQTT.
 
-Verifica se existe um arquivo de configuração do Wi-Fi. Se existir, tenta conectar ao Wi-Fi e iniciar o cliente MQTT. Caso contrário, entra no modo de configuração do Wi-Fi.
+
+
+Verifica se existe um ficheiro de configuração do Wi-Fi. Se existir, tenta conectar ao Wi-Fi e iniciar o cliente MQTT. Caso contrário, entra no modo de configuração do Wi-Fi.
 application_mode(): função para executar o modo de aplicação após a conexão bem-sucedida ao Wi-Fi.
 
 Define rotas e controladores de solicitações HTTP.
 Inicializa uma thread separada para atualizar o LCD com a temperatura atual.
-Bloco try-except para verificar se o arquivo de configuração MQTT existe.
+Bloco try-except para verificar se o ficheiro de configuração MQTT existe.
 
 Se existir, verifica o modo de inscrição e inicia uma thread separada para ouvir as mensagens MQTT.
 Bloco final para iniciar o servidor web.
@@ -230,7 +229,7 @@ Define rotas e controladores de solicitações HTTP para a aplicação.
 Inicializa uma thread separada para atualizar o LCD com a temperatura atual.
 Essas são as principais funcionalidades e estrutura do código fornecido. Ele lida com a leitura de temperatura, controle de LED, comunicação MQTT, configuração de Wi-Fi e servidor web para controlar um sistema de rega.
  
-No arquivo main.py:
+No main.py:
 
 Importações: Importa os módulos e pacotes necessários para o funcionamento do código.
 
@@ -239,26 +238,26 @@ Verificação da conexão do LCD: Verifica se o LCD está conectado corretamente
 Definição das funções de controle das cores do LED: Define funções para controlar as cores do LED.
 Função get_led_status(): Retorna o status atual do LED.
 
-Função get_available_networks(): Retorna a lista de redes Wi-Fi disponíveis.
+<b>Função get_available_networks()</b>: Retorna a lista de redes Wi-Fi disponíveis.
 
-Função check_temp(): Lê a temperatura atual usando um sensor analógico.
+<b>Função check_temp()</b>: Lê a temperatura atual usando um sensor analógico.
 
-Função read_temp(): Lê a temperatura atual e retorna uma string formatada.
+<b>Função read_temp()</b>: Lê a temperatura atual e retorna uma string formatada.
 
-Função read_temp_lcd(): Exibe a temperatura no LCD, se estiver conectado.
+<b>Função read_temp_lcd()</b>: Exibe a temperatura no LCD, se estiver conectado.
 
-Função machine_reset(): Reinicia o Raspberry Pi Pico.
+<b>Função machine_reset()</b>: Reinicia o Raspberry Pi Pico.
 
-Configuração do MQTT: Define as configurações relacionadas ao MQTT, como tópicos, funções de callback e conexão.
+<b>Configuração do MQTT</b>: Define as configurações relacionadas ao MQTT, como tópicos, funções de callback e conexão.
 
-Bloco try-except: Verifica se existe um arquivo de configuração do Wi-Fi e inicia o cliente MQTT.
+Bloco try-except: Verifica se existe um ficheiro de configuração do Wi-Fi e inicia o cliente MQTT.
 
 application_mode(): Executa o modo de aplicação após a conexão bem-sucedida ao Wi-Fi. Define rotas e controladores de solicitações HTTP.
 
-Bloco try-except para verificar se o arquivo de configuração MQTT existe. Inicia uma thread separada para ouvir as mensagens MQTT.
+Bloco try-except para verificar se o ficheiro de configuração MQTT existe. Inicia uma thread separada para ouvir as mensagens MQTT.
 Bloco final para iniciar o servidor web.
 
-No arquivo functions.py:
+#### functions.py:
 
 Importações: Importa os módulos e pacotes necessários para o funcionamento do código.
 setup_mode(): Entra no modo de configuração do Wi-Fi, onde o usuário pode fornecer as informações de SSID e senha.
