@@ -378,7 +378,9 @@ Para garantir o acesso ao serivdor web a partir de qualquer rede foi utilizada a
 
 image.png
 
-Numa fase intermédia a solução foi pensada para que não seja necessário colocar o endereço ip do broker de forma manual, mas sim ao aceder ao endpoint do serviço web /ip  conseguisse saber a localização do broker e estabelecer um túnel reverso. Tal não foi implementado devido à falta de tempo.
+image.png
+
+Numa fase intermédia a solução foi pensada para que não seja necessário colocar o endereço ip do broker de forma manual, mas sim ao aceder ao endpoint do serviço web endereço/ip  conseguisse saber a localização do broker e estabelecer um túnel reverso. Tal não foi implementado devido à falta de tempo.
 
 ## Funcionamento
 
@@ -406,6 +408,8 @@ Para contornar o problema constante de esgotar os recursos, tivemos de procurar 
 Mesmo utilizando estas tecnologias, reparámos que o LCD é o grande responsável por esgotar os recursos do RPW. 
 Outra dificuldade, que após muitos testes, ficámos sem ter a certeza de onde estaria o problema, é que a conexão ao broker é instável. Por vezes tem dificuldade em ligar-se, e outras vezes, deixa de enviar as mensagens. Recorrendo aos logs, parece não chegar a informação por parte do RPW, contudo, o código continua a ser executado corretamente. Levanos a crer, que seja alguma instabilidade do WI-FI.
 
+A falta de documentação da integração do 
+
 ## Melhorias ao projeto
 Apesar do programa estar bastante funcional, e cheio de recursos, consideramos que há lugar para melhorarias ao sistema.
 
@@ -415,10 +419,11 @@ Passamos a elencar as mesmas:
 - melhorar em termos gráficos a administração, tanto em termos de RPW como de FLASK;
 - implementar uma solução melhor de conectividade exterior;
 - melhoria dos scripts de provisionamento;
+- implementar a autoconfiguração do raspberry;
 
 
 ## Conclusão
-No final este projeto, ficámos capazes de programar um dispositivo IOT, denominado de RaspBerry Pico W, configurar um Broker MQTT, e gerir as ligações ao mesmo, protocolos de segurança como o "SSH, reverse tunnel, ngrok - explorar estes mecanismos"
+No final este projeto, ficámos capazes de programar um dispositivo IOT, denominado de RaspBerry Pico W, configurar um Broker MQTT, e gerir as ligações ao mesmo, protocolos de segurança como o túnel reverso de SSH e implementar uma solução pronta a usar por parte do cliente.
 
 ## Bibliografia  
 
