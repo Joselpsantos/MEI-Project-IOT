@@ -28,11 +28,6 @@ app.config['MQTT_LAST_WILL_QOS'] = 2
 
 MESSAGE_LOG_FILE = 'message_log.txt'
 
-# Parameters for SSL enabled
-# app.config['MQTT_BROKER_PORT'] = 8883
-# app.config['MQTT_TLS_ENABLED'] = True
-# app.config['MQTT_TLS_INSECURE'] = True
-# app.config['MQTT_TLS_CA_CERTS'] = 'ca.crt'
 
 log_file = open(MESSAGE_LOG_FILE, 'a')
 
