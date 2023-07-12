@@ -1,0 +1,26 @@
+
+Vagrant.configure("2") do |config|
+  
+   # Primeira máquina virtual
+   config.vm.define "broker" do |ubuntu|
+
+    ubuntu.vm.box = "ubuntu/focal64"	
+    ubuntu.vm.hostname = "broker"
+    ubuntu.vm.network :private_network, ip: "192.168.8.236"
+    #ubuntu.vm.network "public_network", dhcp: true
+    
+    ubuntu.vm.provider :virtualbox do |vb|
+      vb.name = "broker" # Nome atribuido à primeira VM
+	    vb.memory = 1024 # Memoria atribuida
+      vb.customize ["modifyvm", :id, "--groups", "/IOT-Project"]
+	end
+    
+    ubuntu.vm.synced_folder ".", "/vagrant", disabled: false
+
+    ubuntu.vm.provision "shell", privileged: true, path: './provision/install_mosquitto.sh'
+    ubuntu.vm.provision "shell", privileged: true, path: "./provision/install_localtunnel.sh"
+    ubuntu.vm.provision "shell", privileged: true, path: "./provision/install_flask.sh"
+  end
+
+end
+
