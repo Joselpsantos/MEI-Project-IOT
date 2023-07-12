@@ -124,23 +124,22 @@ vagrant reload
 Objetivo do projeto:
 
 Configurar um dispositivo IOT, por forma a criar um sistema automatizado, e com ligação a um broker MQTT, sendo que teria de possuir um sistema de autenticação na rede WIFI, e uma condição de automação e funcionamento.
+Todos estes requsitos foram cumpridos, onde se utilizou o recurso Captive Portal, um painel de gestão próprio no RPW, onde se pode efetuar a ligação ao broker, e definir o tempor de rega.
+Outro portal, centralizado, onde poderemos comunicar com o RPW, e podermos expandir o sistema a outros dispositivos IOT. Este portal utiliza websockets e FLASk.
 
-
-Hardware utilizado:
- 
-
-Programa utilizado:
 
 Para desenvolver o programa em Python (Microphtyon), que vai ser executado no RPW, recorremos ao software <b>Thonny</b>.
 
 
-Este é um código Python que consiste em dois ficheiros principais: main.py e functions.py. 
+### Descrição do programa desenvolvido.
+
+Código Python que consiste em dois ficheiros principais: main.py e functions.py. 
 
 Iremos descrever cada um deles em detalhe:
 
-main.py - ficheiro responsável pela execução do código de inicialização:
+#### main.py - ficheiro responsável pela execução do código de inicialização:
 
-Importações:
+<i>Importações:</i>
 
 <b>config</b>: módulo personalizado que contém algumas configurações do programa desenvolvido.
 
@@ -163,20 +162,18 @@ Importações:
 <b>MQTTClient</b>: classes para criar um cliente MQTT.
 
 <b>uasyncio</b>: biblioteca para programação assíncrona no Micropython.
-
+<br><br>
 #### Inicialização de conexões:
 
-onboard_led, led_r, led_g, led_b: pinos de LED utilizados.
+<b>onboard_led, led_r, led_g, led_b</b>: pinos de LED utilizados.
 
-led_status, lcd_connected: variáveis de estado para o LED e o LCD.
+<b>led_status, lcd_connected</b>: variáveis de estado para o LED e o LCD.
 
-temperature, sensor_temp, conversion_factor: variáveis relacionadas à leitura de temperatura usando o sensor interno
+<b>temperature, sensor_temp, conversion_factor</b>: variáveis relacionadas à leitura de temperatura usando o sensor interno
 
-I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS: constantes para configurar o LCD.
+<b>I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS</b>: constantes para configurar o LCD.
 
-Verificação da conexão do LCD:
-
-Tenta inicializar o objeto lcd do tipo I2cLcd para se comunicar com o LCD.
+<b>Verificação da conexão do LCD</b>: Tenta inicializar o objeto lcd do tipo I2cLcd para se comunicar com o LCD.
 Define a variável lcd_connected como True se a inicialização for bem-sucedida, caso contrário, False. Foi criado esta verificação, para o caso do LCD estar desligado.
 
 #### Definição das funções de controle das cores do LED:
@@ -197,6 +194,7 @@ Define a variável lcd_connected como True se a inicialização for bem-sucedida
 
 <br>
 <b>Configuração do MQTT</b>:
+<br>
 
 <b>topic_sub, topic</b>: tópicos MQTT para assinatura e controle.
 
@@ -214,6 +212,24 @@ Define a variável lcd_connected como True se a inicialização for bem-sucedida
 
 <b>mqtt_listener()</b>: função assíncrona para ouvir as mensagens MQTT.
 
+<b>Função get_available_networks()</b>: Retorna a lista de redes Wi-Fi disponíveis.
+
+<b>Função check_temp()</b>: Lê a temperatura atual usando um sensor analógico.
+
+<b>Função read_temp()</b>: Lê a temperatura atual e retorna uma string formatada.
+
+<b>Função read_temp_lcd()</b>: Exibe a temperatura no LCD, se estiver conectado.
+
+<b>Função machine_reset()</b>: Reinicia o Raspberry Pi Pico.
+
+<b>Configuração do MQTT</b>: Define as configurações relacionadas ao MQTT, como tópicos, funções de callback e conexão.
+
+<b>Bloco try-except</b>: Verifica se existe um ficheiro de configuração do Wi-Fi e inicia o cliente MQTT.
+
+<b>application_mode()</b>: Executa o modo de aplicação após a conexão bem-sucedida ao Wi-Fi. Define rotas e controladores de solicitações HTTP.
+
+<b>Bloco try-except</b> para verificar se o ficheiro de configuração MQTT existe. Inicia uma thread separada para ouvir as mensagens MQTT.
+Bloco final para iniciar o servidor web.
 
 ### Conexão com o WI-FI
 ```
@@ -238,8 +254,6 @@ Verifica se existe um ficheiro de configuração do Wi-Fi. Se existir, tenta con
     server.add_route("/off", handler=app_rega_off, methods=["GET"])
     server.add_route("/auto", handler=app_rega_auto, methods=["GET"])
     server.add_route("/config", handler=app_mqtt_config, methods=["GET", "POST"])
-    # server.add_route("/log", handler=app_log, methods=["GET"])
-    # Adicionar outras rotas
 
 
 Define rotas e controladores de solicitações HTTP.
@@ -250,69 +264,124 @@ Se existir, verifica o modo de inscrição e inicia uma thread separada para ouv
 Bloco final para iniciar o servidor web.
  
 
-# functions.py:
-
-Importações:
-
-phew, pico_temp_sensor, pico_led, json, os, utime, _thread, umail, config, usocket as socket, network, uasyncio as asyncio.
-setup_mode(): função para entrar no modo de configuração do Wi-Fi.
-
-application_mode(client): função para executar o modo de aplicação após a conexão bem-sucedida ao Wi-Fi.
-
-Define rotas e controladores de solicitações HTTP para a aplicação.
-Inicializa uma thread separada para atualizar o LCD com a temperatura atual.
-Essas são as principais funcionalidades e estrutura do código fornecido. Ele lida com a leitura de temperatura, controle de LED, comunicação MQTT, configuração de Wi-Fi e servidor web para controlar um sistema de rega.
+Essas são as principais funcionalidades e estrutura do código presente no main.py. Ele lida com a leitura de temperatura, controle de LED, comunicação MQTT, configuração de Wi-Fi e servidor web para controlar o sistema de rega.
  
-No main.py:
-
-Importações: Importa os módulos necessários para o funcionamento do código.
-
-Inicialização de conexões: Define as conexões, como pinos de LED e configurações do LCD.
-Verificação da conexão do LCD: Verifica se o LCD está conectado corretamente.
-Definição das funções de controle das cores do LED: Define funções para controlar as cores do LED.
-Função get_led_status(): Retorna o status atual do LED.
-
-<b>Função get_available_networks()</b>: Retorna a lista de redes Wi-Fi disponíveis.
-
-<b>Função check_temp()</b>: Lê a temperatura atual usando um sensor analógico.
-
-<b>Função read_temp()</b>: Lê a temperatura atual e retorna uma string formatada.
-
-<b>Função read_temp_lcd()</b>: Exibe a temperatura no LCD, se estiver conectado.
-
-<b>Função machine_reset()</b>: Reinicia o Raspberry Pi Pico.
-
-<b>Configuração do MQTT</b>: Define as configurações relacionadas ao MQTT, como tópicos, funções de callback e conexão.
-
-Bloco try-except: Verifica se existe um ficheiro de configuração do Wi-Fi e inicia o cliente MQTT.
-
-application_mode(): Executa o modo de aplicação após a conexão bem-sucedida ao Wi-Fi. Define rotas e controladores de solicitações HTTP.
-
-Bloco try-except para verificar se o ficheiro de configuração MQTT existe. Inicia uma thread separada para ouvir as mensagens MQTT.
-Bloco final para iniciar o servidor web.
 
 #### functions.py:
 
-Importações: Importa os módulos e pacotes necessários para o funcionamento do código.
-setup_mode(): Entra no modo de configuração do Wi-Fi, onde o usuário pode fornecer as informações de SSID e senha.
+Todas as funções invocadas no main.py, estão definidas no functions.py
 
-application_mode(client): Executa o modo de aplicação após a conexão bem-sucedida ao Wi-Fi. Define rotas e controladores de solicitações HTTP para a aplicação.
+```
+def get_available_networks():
+    wlan = network.WLAN(network.STA_IF)
+    networks = wlan.scan()
+    return [net[0].decode() for net in networks]
+```
+Esta função procura pelas redes WI-FI, e retornas as mesmas para ser utilizado na página WEB.
 
+```
+def sub_cb(topic, msg, client):
+    print("New message on topic: {}".format(topic.decode('utf-8')))
+    msg = msg.decode('utf-8')
+    print(msg)
+    if msg == "on":
+        rega_on(client)
+    elif msg == "off":
+        rega_off(client)
+    elif msg.startswith("\"AUTO\","):
+        try:
+            temperature = int(msg.split(",")[1])
+            #rega_auto(temperature, client)
+            loop = asyncio.get_event_loop()
+            loop.create_task(rega_auto(request, client, temperature))
+            loop.run_forever()
+        except (ValueError, IndexError):
+            print("Formato inválido da mensagem AUTO")
+```
 
-Essas são as principais partes do código e o que cada função faz. Cada função desempenha um papel específico no controlo do sistema de rega, comunicação MQTT, atualização do LCD, configuração do Wi-Fi, e do controlo dos LEDs.
+Aqui estamos a definir os procedimentos que o RPW terá, quando subscrever um tópico e recebe as mensagens.
 
+```
+async def rega_auto(request, client):
+    led_blue()
+    with open(config.MQTT_CONFIG_FILE) as f:
+        conf_data = json.load(f)
+    mqtt_topic = conf_data.get("mqtt_topic")
+    temperature = request.query.get("temperature", "")  # Obter a temperatura
+    
+    # Envia o estado para o LCD
+    if lcd_connected:
+        lcd.clear()
+        lcd.move_to(0, 1)
+        lcd.putstr("Rega AUTO")
+        
+    # Envia msg MQTT
+    client.publish(mqtt_topic, "AUTO")
+        
+    def get_temperature():
+        sensor_temp = machine.ADC(4)
+        conversion_factor = 3.3 / (65535)
+        reading = sensor_temp.read_u16() * conversion_factor 
+        temperature = 27 - (reading - 0.706)/0.001721
+        return temperature
+    
+    # Verificar se a temperatura é um valor válido
+    if temperature.isdigit():
+        # Converter a temperatura para INT
+        temperature = int(temperature)
+
+        # Imprimir a temperatura na consola
+        #print(f"Temperatura definida para: {temperature} graus")
+        
+        # Escrever o estado pretendido em um arquivo
+        with open("auto.txt", "w") as f:
+            f.write(f'"AUTO",{temperature}')
+            print(f"Estado pretendido guardado: AUTO. Temperatura: {temperature}")
+        
+        while True:
+            if get_temperature() >= temperature:
+                # Ativar a rega
+                rega_on(client)
+                print(get_temperature())
+                await asyncio.sleep(40)  # Aguardar 5 minutos
+                rega_off(client)
+            else:
+                await asyncio.sleep(10)  # Aguardar 10 segundos antes de verificar novamente
+            
+        # Retornar uma resposta de sucesso
+        return "OK"
+    else:
+        # Se a temperatura não for válida, retornar um erro
+        return "Temperatura inválida.", 400
+    client.publish("Rega", "Automático")
+```
+Na função aqui transcrita, foi a função mais desafiante de elaborar do projeto.
+Esta função teria de estar sempre à escuta, o que implica utilização de recursos, e executar comandos, também com alguma complexidade. 
+
+Irá ativar
 
 #### FLASK - Painel de controlor
 
 
 ## Funcionamento
 
+#### Funções assíncronas
+NOTA: COLOCAR IMAGEM
+#### Threads
+NOTA: COLOCAR IMAGEM
+
 ## Dificuldades
 Uma vez que para este projeto foi utilizado o Raspberry Pico W, que é um hardware excelente custo vs benefícios, contudo, para projetos mais elaborados, as suas caracteristicas/recursos ficam limitados.
 
 Na execução deste projeto, utilizámos um LCD, uma ligação AP, e um broker, o que se revelou claramente exigente para o hardware.
 Para contornar o problema constante de esgotar os recursos, tivemos de procurar soluções alternativas, pelo que fizemos uso de threads, e de funções assíncronas.
-Mesmo utilizando estas tecnologias 
+
+Mesmo utilizando estas tecnologias, reparámos que o LCD é o grande responsável por esgotar os recursos do RPW. 
+Outra dificuldade, que após muitos testes, ficámos sem ter a certeza de onde estaria o problema, é que a conexão ao broker é instável. Por vezes tem dificuldade em ligar-se, e outras vezes, deixa de enviar as mensagens. Recorrendo aos logs, parece não chegar a informação por parte do RPW, contudo, o código continua a ser executado corretamente.
+
+
+## Conclusão
+No final este projeto, ficámos capazes de programar um dispositivo IOT, denominado de RaspBerry Pico W, configurar um Broker MQTT, e gerir as ligações ao mesmo, protocolos de segurança como o "SSH, reverse tunnel, ngrok - explorar estes mecanismos"
 
 ## Bibliografia  
 
