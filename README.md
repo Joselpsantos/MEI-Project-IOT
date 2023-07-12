@@ -39,8 +39,8 @@ A ligação feita pelo exterior, fica a carga da solução NGROK.
 - 5x resistências
 - 14x fios de ligação
 
-<img src="/Imagens/rpicogpin.png" width="400">
-<img src="/Imagens/rpicow.jpg" width="400">
+<img src="/Imagens/rpicogpin.png" width="600">
+<img src="/Imagens/rpicow.jpg" width="600">
 
 
 ## Características  
@@ -379,6 +379,12 @@ Com as funções assíncronas, podemos executar várias tarefas em simultâneo, 
 
 #### Threads
 NOTA: COLOCAR IMAGEM
+
+## Testes
+Toda a solução passou por diversos testes para assegurar a correta operacionalidade.
+
+O captive portal, foi testado em IOS, ANDROID e WINDOWS, tendo efetuado a ligação sem problemas em nenhuma das plataformas.
+A conexão
 
 ## Dificuldades
 Uma vez que para este projeto foi utilizado o Raspberry Pico W, que é um hardware excelente custo vs benefícios, contudo, para projetos mais elaborados, as suas caracteristicas/recursos ficam limitados.
