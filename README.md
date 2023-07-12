@@ -61,7 +61,7 @@ Raspberry Pico w:
 Clonar o projeto  
 
 ~~~bash  
-  git clone https://github.com/PaivaX/MQTT-vagrant.git
+  git clone https://github.com/Joselpsantos/MEI-Project-IOT.git
 ~~~
 
 Ir para o diretório do projeto  
