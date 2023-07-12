@@ -67,7 +67,7 @@ Clonar o projeto
 Ir para o diretório do projeto  
 
 ~~~bash  
-  cd vagrant-mqtt
+  cd WebComponent
 ~~~
 
 Iniciar as VM  
