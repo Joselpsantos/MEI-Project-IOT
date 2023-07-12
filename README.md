@@ -449,7 +449,14 @@ Com as funções assíncronas, podemos executar várias tarefas em simultâneo, 
 Toda a solução passou por diversos testes para assegurar a correta operacionalidade.
 
 O captive portal, foi testado em IOS, ANDROID e WINDOWS, tendo efetuado a ligação sem problemas em nenhuma das plataformas.
-A conexão
+Após ligação ao WIFI, é enviado um mail com o IP do RPW, que inserindo o mesmo no browser, teremos acesso ao painel de control e painel de configurações.
+
+Foi testado o modo ON, OFF e AUTO, em diversos cenários, e decorreu dentro do esperado, com excessão da LED do modo AUTO. Teria de ser refórmulado uma grande parte do código para assegurar o correto funcionamento do LED.
+
+A ligação ao Broker, nem sempre está funcional, como será explicado no póximo tópico.
+A ligação WebSockets também foi testada, e a funcionar dentro da normalidade.
+A ligação com o exterior, tivemos alguma dificuldade por causa dos protocolos, mas foi efetuado por via do localtunnel, decorrendo de forma normal.
+
 
 ## Dificuldades
 Uma vez que para este projeto foi utilizado o Raspberry Pico W, que é um hardware excelente custo vs benefícios, contudo, para projetos mais elaborados, as suas caracteristicas/recursos ficam limitados.
