@@ -416,7 +416,7 @@ Para contornar o problema constante de esgotar os recursos, tivemos de procurar 
 Mesmo utilizando estas tecnologias, reparámos que o LCD é o grande responsável por esgotar os recursos do RPW. 
 Outra dificuldade, que após muitos testes, ficámos sem ter a certeza de onde estaria o problema, é que a conexão ao broker é instável. Por vezes tem dificuldade em ligar-se, e outras vezes, deixa de enviar as mensagens. Recorrendo aos logs, parece não chegar a informação por parte do RPW, contudo, o código continua a ser executado corretamente. Levanos a crer, que seja alguma instabilidade do WI-FI.
 
-A falta de documentação da integração do 
+A falta de documentação da integração do Flask com as outras tecnologias, nomeadamente a compatibilidade entre os websockets e o MQTT dificultou a execução da componente web do trabalho, também devido à inexistência de debugging.
 
 ## Melhorias ao projeto
 Apesar do programa estar bastante funcional, e cheio de recursos, consideramos que há lugar para melhorarias ao sistema.
