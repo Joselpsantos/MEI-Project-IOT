@@ -372,15 +372,22 @@ Nesta função, acendemos a luz indicadora de rega em modo AUTO, vai pesquisar n
 
 Para a execução deste projeto foi escolhido o flask porque este tem integração com o MQTT, Websockets e devido à sua sintaxe simples. Assim que é executado serve uma página web idêntica à servida pelo raspberry, no entanto esta comunica por websockets com os clientes. Deste modo é garantida comunicação em tempo real entre o cliente e o raspberry.
 
+![image](https://github.com/Joselpsantos/MEI-Project-IOT/assets/113514374/81fa3521-a2da-4698-bc1b-ca8cf404c404)
+
+
 Aquando a conexão de um cliente é apresentada uma caixa de texto que assume a função de log do tráfego dos websockets em tempo real. Para além dos logs apresentados no lado do servidor guardados num ficheiro de text message_log.txt'
+
+![image](https://github.com/Joselpsantos/MEI-Project-IOT/assets/113514374/5599e406-5df2-488b-91f1-5627665659fe)
+
 
 Para garantir o acesso ao serivdor web a partir de qualquer rede foi utilizada a ferramenta open source 'localtunnel'. É possível definir um túnel de forma muito simples, ao executar o comando  'lt --subdomain <doman-name> --port <Port>' a aplicação está acessível a qualquer um. A ferramenta é intencionada para o uso em testes, como tal antes de um cliente estabelecer ligação pela primeira vez tem de colocar o ip público do servidor.
 
-image.png
-
-image.png
+![image](https://github.com/Joselpsantos/MEI-Project-IOT/assets/113514374/53fa0d89-fffb-48a3-a503-37a16fbb66a3)
 
 Numa fase intermédia a solução foi pensada para que não seja necessário colocar o endereço ip do broker de forma manual, mas sim ao aceder ao endpoint do serviço web endereço/ip  conseguisse saber a localização do broker e estabelecer um túnel reverso. Tal não foi implementado devido à falta de tempo.
+
+![image](https://github.com/Joselpsantos/MEI-Project-IOT/assets/113514374/93aea008-8022-48b5-babb-141cc51e9adb)
+
 
 ## Funcionamento
 
@@ -391,7 +398,8 @@ Funções que executam operações demoradas (I/O ou CPU intensive), em simultâ
 Com as funções assíncronas, podemos executar várias tarefas em simultâneo, e com tratamento individualizado dos erros para cada tarefa.
 
 #### Threads
-image.png
+![image](https://github.com/Joselpsantos/MEI-Project-IOT/assets/113514374/3e4b6ffb-6e88-4bb9-a94e-1099e35e7003)
+
 
 ## Testes
 Toda a solução passou por diversos testes para assegurar a correta operacionalidade.
