@@ -21,7 +21,7 @@ A ligação feita pelo exterior, fica a carga da solução NGROK.
 
 ## Screenshots  
 
-![App Screenshot](https://github.com/Joselpsantos/MEI-Project-IOT/assets/113514374/31623f6e-d969-471d-90da-f9c6999aba5e)
+![image](https://github.com/Joselpsantos/MEI-Project-IOT/assets/113514374/fae091b8-b64c-4f30-99d8-499e1881db1d)
 
 ## Recursos utilizado  
 
