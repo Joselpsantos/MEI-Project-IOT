@@ -1,0 +1,109 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Flask-MQTT example{% endblock %}
+
+{% block styles %}
+{{ super() }}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function() {
+    var socket = io.connect();
+  
+    socket.on('connect', function() {
+      // Send a message to Flask on page load
+      socket.emit('subscribe', 'Hello, Flask!');
+    });
+
+    $(window).on('beforeunload', function() {
+      // Send a message to Flask before the page closes
+      socket.emit('page_close', 'Goodbye, Flask!');
+    });
+
+    $('#led_on').click(function(event) {
+      //var data = '{"topic": "control", "message": "on, "qos": ' + qos + '}';
+      console.log("on")
+      socket.emit('led', data="on");
+    });
+
+    $('#led_off').click(function(event) {
+      //var data = '{"topic": "control", "message": off, "qos": ' + qos + '}';
+      console.log("off")
+      socket.emit('led', data="off");
+    });
+
+    $('#setTempBtn').click(function(event) {
+      var tempRange = document.getElementById('tempRange');
+      var temperature = tempRange.value;
+      socket.emit('auto', data=temperature);
+    });
+
+    socket.on('led_status', function(data) {
+      var ledStatus = data; // Assuming the received data is the LED status
+      console.log(data);
+      $('#led_status').text('Status do LED: ' + ledStatus);
+      var text = ledStatus;
+      var $textarea = $('#subscribe_messages');
+      $textarea.val($textarea.val() + text + '\n');
+    });
+
+    socket.on('curr_temp', function(data) {
+      var ledStatus = data; // Assuming the received data is the LED status
+      console.log(data);
+      $('#temperature').text('Temperatura: ' + ledStatus);
+      var text = ledStatus;
+      var $textarea = $('#subscribe_messages');
+      $textarea.val($textarea.val() + text + '\n');
+    });
+
+    socket.on('mqtt_message', function(data) {
+      console.log(data);
+      var text = '(' + data['topic'] + ' qos: ' + data['qos'] + ') ' + data['payload'];
+      var $textarea = $('#subscribe_messages');
+      $textarea.val($textarea.val() + text + '\n');
+    })
+  });
+</script>
+<script>
+
+  document.getElementById('autoBtn').onclick = function() {
+    var autoControl = document.getElementById('autoControl');
+    autoControl.style.display = 'block';
+  };
+
+  // Atualizar valor da temperatura
+  var tempRange = document.getElementById('tempRange');
+  var tempSpan = document.getElementById('tempSpan');
+  tempSpan.innerHTML = tempRange.value;
+  tempRange.oninput = function() {
+    tempSpan.innerHTML = this.value;
+  };
+</script>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h1>Bem-vindo!</h1>
+    <h2 id="temperature">Temperatura: </h2>
+    <br/>
+    <div class="btn-group" role="group" aria-label="Modo">
+      <button type="button" class="btn btn-primary" id="led_on">On</button>
+      <button type="button" class="btn btn-danger" id="led_off">Off</button>
+      <button type="button" class="btn btn-secondary" id="autoBtn">Auto</button>
+    </div>
+    <h2 id="led_status">Status do LED: </h2>
+    
+    <div id="autoControl" style="display: none;">
+      <h3>Controle de Temperatura Automático</h3>
+      <label for="tempRange">Temperatura Desejada:</label>
+      <input type="range" class="form-range" id="tempRange" min="10" max="40" step="1">
+      <p id="tempValue">Temperatura: <span id="tempSpan"></span></p>
+      <button type="button" class="btn btn-primary" id="setTempBtn">Definir</button>
+    </div>
+    <div class="col-xs-8">
+      <textarea id="subscribe_messages" class="form-control" rows=10></textarea>
+    </div>
+  </div>
+  {% endblock %}
