@@ -6,7 +6,9 @@ from flask import Flask, render_template
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
 from flask_bootstrap import Bootstrap
+from datetime import datetime
 import netifaces
+#from flask_ngrok import run_with_ngrok
 eventlet.monkey_patch()
 
 app = Flask(__name__)
@@ -24,20 +26,24 @@ app.config['MQTT_LAST_WILL_TOPIC'] = 'home/lastwill'
 app.config['MQTT_LAST_WILL_MESSAGE'] = 'bye'
 app.config['MQTT_LAST_WILL_QOS'] = 2
 
+MESSAGE_LOG_FILE = 'message_log.txt'
+
 # Parameters for SSL enabled
 # app.config['MQTT_BROKER_PORT'] = 8883
 # app.config['MQTT_TLS_ENABLED'] = True
 # app.config['MQTT_TLS_INSECURE'] = True
 # app.config['MQTT_TLS_CA_CERTS'] = 'ca.crt'
 
+log_file = open(MESSAGE_LOG_FILE, 'a')
+
 mqtt = Mqtt(app)
 socketio = SocketIO(app)
 bootstrap = Bootstrap(app)
-
+#run_with_ngrok(app)
 
 @app.route('/')
 def index():
-    return render_template('index2.html')
+    return render_template('index.html')
 
 @app.route('/ip')
 def getIpEnd():
@@ -45,8 +51,13 @@ def getIpEnd():
 
 @socketio.on('led')
 def handle_publish(json_str):
+    #connection_id = request.sid  # Get the connection ID
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    message = f'[{timestamp}]  Message: {json_str}\n'
     mqtt.publish("control", json_str, 0)
     print(json_str)
+    log_file.write(message)  # Write the message to the log file
+    log_file.flush()  # Flush the file to ensure immediate write
 
 @socketio.on('auto')
 def handle_publish(json_str):
@@ -72,6 +83,7 @@ def handle_page_close(msg):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     payload = message.payload.decode()  # Convert payload to string
     topic = message.topic
     qos = message.qos
@@ -82,14 +94,16 @@ def handle_mqtt_message(client, userdata, message):
         'qos': qos,
         'retained': retained
     }
+    message = f'[{timestamp}] Topic: {topic}, Payload: {payload}\n'
     if data['topic'] == "control" :
         print("Message received on topic: " + data["topic"] + " with the message: " + data["payload"])
         if data["payload"] != "on" or data["payload"] != "off" or data["payload"] != "unsubscribe":
             socketio.emit('led_status', data=data["payload"])
-        
     if data['topic'] == "temperature" :
         print("Message received on topic: " + data["topic"] + " with the message: " + data["payload"])
         socketio.emit('curr_temp', data=data["payload"])
+    log_file.write(message)  # Write the message to the log file
+    log_file.flush()  # Flush the file to ensure immediate write
 
 
 @mqtt.on_log()
@@ -103,4 +117,6 @@ def getIp():
     return ip_address
 
 if __name__ == '__main__':
-    socketio.run(app, host=getIp(), port=5000, use_reloader=False, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, use_reloader=False, debug=True)
+
+    

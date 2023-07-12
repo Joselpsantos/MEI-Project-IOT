@@ -1,9 +1,0 @@
-Metadata-Version: 2.1
-Name: micropython-warnings
-Version: 0.1.1
-Summary: warnings module for MicroPython
-Home-page: https://github.com/micropython/micropython-lib
-Author: MicroPython Developers
-Author-email: micro-python@googlegroups.com
-License: MIT
-
