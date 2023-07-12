@@ -435,6 +435,18 @@ Numa fase intermédia a solução foi pensada para que não seja necessário col
 
 ## Funcionamento
 
+O projeto começa com a ligação do RPW ao WI-FI.
+Para iniciar o Captive Portal, ligamos à rede "Raspberry_pico AP", que automaticamente irá pedir as credênciais, conforme imagem mais abaixo. 
+
+<img src="Imagens/redewifi.jpg" width="400">
+
+<img src="Imagens/captiveportallogin.jpg" width="400">
+
+Nestapágina, poderemos efetuar a configuração do MQTT e do tempo de rega.
+
+<img src="Imagens/configportal.jpg" width="400">
+
+
 #### Funções assíncronas
 <img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*Dyr7amckevWGqes1PTv0SQ.png" width="400">
 
